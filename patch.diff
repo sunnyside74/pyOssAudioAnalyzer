@@ -1,0 +1,213 @@
+From 5e29449d6dc047ede49d7766bc841e3ca17983bd Mon Sep 17 00:00:00 2001
+From: SeungSoo Oh <sunnyside74@gmail.com>
+Date: Fri, 11 Sep 2020 15:45:54 +0900
+Subject: [PATCH] =?UTF-8?q?TestPy.ipynb:=20scipy=EC=9D=98=20wave=20file=20?=
+ =?UTF-8?q?read=20=EB=A9=94=EC=8D=A8=EB=93=9C=EB=A5=BC=20=EC=9D=B4?=
+ =?UTF-8?q?=EC=9A=A9=ED=95=98=EC=97=AC=20wave=ED=8C=8C=EC=9D=BC=EC=9D=84?=
+ =?UTF-8?q?=20=EB=B6=88=EB=9F=AC=EC=98=A4=EA=B3=A0=20=ED=8C=8C=ED=98=95=20?=
+ =?UTF-8?q?=EA=B7=B8=EB=A6=AC=EA=B8=B0=20=ED=85=8C=EC=8A=A4=ED=8A=B8=20?=
+ =?UTF-8?q?=ED=95=A8?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ TestPy.ipynb                      |  71 +++++++++---------------------
+ TyndallBruceMonument.wav.reapeaks | Bin 0 -> 12362 bytes
+ pyOssAudioAnalyzer.ipynb          |   8 ++--
+ 3 files changed, 24 insertions(+), 55 deletions(-)
+ create mode 100644 TyndallBruceMonument.wav.reapeaks
+
+diff --git a/TestPy.ipynb b/TestPy.ipynb
+index f388b73..55c362b 100644
+--- a/TestPy.ipynb
++++ b/TestPy.ipynb
+@@ -10,12 +10,12 @@
+    "name": "python",
+    "nbconvert_exporter": "python",
+    "pygments_lexer": "ipython3",
+-   "version": "3.8.3-final"
++   "version": "3.8.5-final"
+   },
+   "orig_nbformat": 2,
+   "kernelspec": {
+-   "name": "python_defaultSpec_1599373118997",
+-   "display_name": "Python 3.8.3 64-bit ('base': conda)"
++   "name": "python_defaultSpec_1599710947981",
++   "display_name": "Python 3.8.5 64-bit"
+   }
+  },
+  "nbformat": 4,
+@@ -23,26 +23,11 @@
+  "cells": [
+   {
+    "cell_type": "code",
+-   "execution_count": 2,
+-   "metadata": {},
+-   "outputs": [
+-    {
+-     "output_type": "error",
+-     "ename": "ModuleNotFoundError",
+-     "evalue": "No module named 'numba.decorators'",
+-     "traceback": [
+-      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+-      "\u001b[1;31mModuleNotFoundError\u001b[0m                       Traceback (most recent call last)",
+-      "\u001b[1;32m<ipython-input-2-6886c383e2e2>\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     13\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[0mscipy\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mio\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mwavfile\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     14\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mmatplotlib\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mpyplot\u001b[0m \u001b[1;32mas\u001b[0m \u001b[0mplt\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m---> 15\u001b[1;33m \u001b[1;32mimport\u001b[0m \u001b[0mlibrosa\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m",
+-      "\u001b[1;32m~\\anaconda3\\lib\\site-packages\\librosa\\__init__.py\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     10\u001b[0m \u001b[1;31m# And all the librosa sub-modules\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     11\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mcache\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m---> 12\u001b[1;33m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mcore\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m     13\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mbeat\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     14\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mdecompose\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\site-packages\\librosa\\core\\__init__.py\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m    107\u001b[0m \"\"\"\n\u001b[0;32m    108\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 109\u001b[1;33m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m\u001b[0mtime_frequency\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[1;33m*\u001b[0m  \u001b[1;31m# pylint: disable=wildcard-import\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    110\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m\u001b[0maudio\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[1;33m*\u001b[0m  \u001b[1;31m# pylint: disable=wildcard-import\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    111\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m\u001b[0mspectrum\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[1;33m*\u001b[0m  \u001b[1;31m# pylint: disable=wildcard-import\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\site-packages\\librosa\\core\\time_frequency.py\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      8\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0msix\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m      9\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m---> 10\u001b[1;33m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mutil\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mexceptions\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mParameterError\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m     11\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     12\u001b[0m __all__ = ['frames_to_samples', 'frames_to_time',\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\site-packages\\librosa\\util\\__init__.py\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m     69\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m\u001b[0mmatching\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[1;33m*\u001b[0m  \u001b[1;31m# pylint: disable=wildcard-import\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     70\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m\u001b[0mdeprecation\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[1;33m*\u001b[0m  \u001b[1;31m# pylint: disable=wildcard-import\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m---> 71\u001b[1;33m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mdecorators\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m     72\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[1;33m.\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mexceptions\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     73\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\site-packages\\librosa\\util\\decorators.py\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      7\u001b[0m \u001b[1;32mfrom\u001b[0m \u001b[0mdecorator\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mdecorator\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m      8\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0msix\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m----> 9\u001b[1;33m \u001b[1;32mfrom\u001b[0m \u001b[0mnumba\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mdecorators\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mjit\u001b[0m \u001b[1;32mas\u001b[0m \u001b[0moptional_jit\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m     10\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m     11\u001b[0m \u001b[0m__all__\u001b[0m \u001b[1;33m=\u001b[0m \u001b[1;33m[\u001b[0m\u001b[1;34m'moved'\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;34m'deprecated'\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;34m'optional_jit'\u001b[0m\u001b[1;33m]\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;31mModuleNotFoundError\u001b[0m: No module named 'numba.decorators'"
+-     ]
+-    }
+-   ],
++   "execution_count": 5,
++   "metadata": {
++    "tags": []
++   },
++   "outputs": [],
+    "source": [
+     "# Import Systems \n",
+     "import struct\n",
+@@ -54,16 +39,17 @@
+     "# Import Audio\n",
+     "import wave\n",
+     "import pyaudio\n",
++    "import librosa\n",
+     "\n",
+     "import numpy as np\n",
+     "from scipy.io import wavfile\n",
+     "import matplotlib.pyplot as plt\n",
+-    "import librosa\n"
++    "\n"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 3,
++   "execution_count": 2,
+    "metadata": {
+     "tags": []
+    },
+@@ -77,33 +63,16 @@
+    "source": [
+     "wav_samplerate, wav_data = wavfile.read(\"TyndallBruceMonument.wav\")\n",
+     "print(f\"Samplerate = {wav_samplerate}\")\n",
++    "print(f\"Length = {wav_data.shape[0]}\")\n",
+     "print(f\"Number of Channels = {wav_data.shape[1]}\")\n",
+-    "print(f\"wav_data.shape[0] = {wav_data.shape[0]}\")\n"
+-   ]
+-  },
+-  {
+-   "cell_type": "code",
+-   "execution_count": 4,
+-   "metadata": {},
+-   "outputs": [
+-    {
+-     "output_type": "error",
+-     "ename": "Error",
+-     "evalue": "unknown format: 3",
+-     "traceback": [
+-      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+-      "\u001b[1;31mError\u001b[0m                                     Traceback (most recent call last)",
+-      "\u001b[1;32m<ipython-input-4-3efd81b067de>\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[1;32m----> 1\u001b[1;33m \u001b[0mopened_wavfile\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mwave\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mopen\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m'TyndallBruceMonument.wav'\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;34m'rb'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m",
+-      "\u001b[1;32m~\\anaconda3\\lib\\wave.py\u001b[0m in \u001b[0;36mopen\u001b[1;34m(f, mode)\u001b[0m\n\u001b[0;32m    508\u001b[0m             \u001b[0mmode\u001b[0m \u001b[1;33m=\u001b[0m \u001b[1;34m'rb'\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    509\u001b[0m     \u001b[1;32mif\u001b[0m \u001b[0mmode\u001b[0m \u001b[1;32min\u001b[0m \u001b[1;33m(\u001b[0m\u001b[1;34m'r'\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;34m'rb'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 510\u001b[1;33m         \u001b[1;32mreturn\u001b[0m \u001b[0mWave_read\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    511\u001b[0m     \u001b[1;32melif\u001b[0m \u001b[0mmode\u001b[0m \u001b[1;32min\u001b[0m \u001b[1;33m(\u001b[0m\u001b[1;34m'w'\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;34m'wb'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    512\u001b[0m         \u001b[1;32mreturn\u001b[0m \u001b[0mWave_write\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\wave.py\u001b[0m in \u001b[0;36m__init__\u001b[1;34m(self, f)\u001b[0m\n\u001b[0;32m    162\u001b[0m         \u001b[1;31m# else, assume it is an open file object already\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    163\u001b[0m         \u001b[1;32mtry\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 164\u001b[1;33m             \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0minitfp\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    165\u001b[0m         \u001b[1;32mexcept\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    166\u001b[0m             \u001b[1;32mif\u001b[0m \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_i_opened_the_file\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\wave.py\u001b[0m in \u001b[0;36minitfp\u001b[1;34m(self, file)\u001b[0m\n\u001b[0;32m    142\u001b[0m             \u001b[0mchunkname\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mchunk\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mgetname\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    143\u001b[0m             \u001b[1;32mif\u001b[0m \u001b[0mchunkname\u001b[0m \u001b[1;33m==\u001b[0m \u001b[1;34mb'fmt '\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 144\u001b[1;33m                 \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_read_fmt_chunk\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mchunk\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    145\u001b[0m                 \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_fmt_chunk_read\u001b[0m \u001b[1;33m=\u001b[0m \u001b[1;36m1\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    146\u001b[0m             \u001b[1;32melif\u001b[0m \u001b[0mchunkname\u001b[0m \u001b[1;33m==\u001b[0m \u001b[1;34mb'data'\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;32m~\\anaconda3\\lib\\wave.py\u001b[0m in \u001b[0;36m_read_fmt_chunk\u001b[1;34m(self, chunk)\u001b[0m\n\u001b[0;32m    267\u001b[0m                 \u001b[1;32mraise\u001b[0m \u001b[0mError\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m'bad sample width'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    268\u001b[0m         \u001b[1;32melse\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 269\u001b[1;33m             \u001b[1;32mraise\u001b[0m \u001b[0mError\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m'unknown format: %r'\u001b[0m \u001b[1;33m%\u001b[0m \u001b[1;33m(\u001b[0m\u001b[0mwFormatTag\u001b[0m\u001b[1;33m,\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    270\u001b[0m         \u001b[1;32mif\u001b[0m \u001b[1;32mnot\u001b[0m \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_nchannels\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    271\u001b[0m             \u001b[1;32mraise\u001b[0m \u001b[0mError\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m'bad # of channels'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+-      "\u001b[1;31mError\u001b[0m: unknown format: 3"
+-     ]
+-    }
+-   ],
+-   "source": [
+-    "opened_wavfile = wave.open('TyndallBruceMonument.wav', 'rb')\n"
++    "\n",
++    "time = np.linspace(0., length, data.shape[0])\n",
++    "plt.plot(time, data[:, 0], label=\"Left channel\")\n",
++    "plt.plot(time, data[:, 1], label=\"Right channel\")\n",
++    "plt.legend()\n",
++    "plt.xlabel(\"Time [s]\")\n",
++    "plt.ylabel(\"Amplitude\")\n",
++    "plt.show()"
+    ]
+   },
+   {
+diff --git a/TyndallBruceMonument.wav.reapeaks b/TyndallBruceMonument.wav.reapeaks
+new file mode 100644
+index 0000000000000000000000000000000000000000..82484d8ccd9f1c4b518ed85f6dc30750737cfcda
+GIT binary patch
+literal 12362
+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
+EZ>{3ITL1t6
+
+literal 0
+HcmV?d00001
+
+diff --git a/pyOssAudioAnalyzer.ipynb b/pyOssAudioAnalyzer.ipynb
+index 77a3b5a..c622158 100644
+--- a/pyOssAudioAnalyzer.ipynb
++++ b/pyOssAudioAnalyzer.ipynb
+@@ -10,12 +10,12 @@
+    "name": "python",
+    "nbconvert_exporter": "python",
+    "pygments_lexer": "ipython3",
+-   "version": "3.8.3-final"
++   "version": "3.8.5-final"
+   },
+   "orig_nbformat": 2,
+   "kernelspec": {
+-   "name": "python_defaultSpec_1599297906294",
+-   "display_name": "Python 3.8.3 64-bit ('base': conda)"
++   "name": "python_defaultSpec_1599580908224",
++   "display_name": "Python 3.8.5 64-bit ('base': conda)"
+   }
+  },
+  "nbformat": 4,
+@@ -59,7 +59,7 @@
+     {
+      "output_type": "stream",
+      "name": "stdout",
+-     "text": "C:\\Users\\iMacPC\\anaconda3\\bin\\libportaudio-2.dll\n<Lib object for 'C:\\Users\\iMacPC\\anaconda3\\bin\\libportaudio-2.dll'>\n(1246720, 'PortAudio V19.6.0-devel, revision 396fe4b6699ae929d3a685b3ef8a7e97396139a4')\n  0 Microsoft 사운드 매퍼 - Input, MME (2 in, 0 out)\n> 1 Headset Microphone(Cirrus Logic, MME (2 in, 0 out)\n  2 Microsoft 사운드 매퍼 - Output, MME (0 in, 2 out)\n< 3 헤드셋(Cirrus Logic CS8409 (AB , MME (0 in, 2 out)\n  4 스피커(Cirrus Logic CS8409 (AB , MME (0 in, 2 out)\n"
++     "text": "C:\\Users\\iMacPC\\anaconda3\\Library\\bin\\portaudio.dll\n<Lib object for 'C:\\Users\\iMacPC\\anaconda3\\Library\\bin\\portaudio.dll'>\n(1246720, 'PortAudio V19.6.0-devel, revision 396fe4b6699ae929d3a685b3ef8a7e97396139a4')\n  0 Microsoft 사운드 매퍼 - Input, MME (2 in, 0 out)\n> 1 Headset Microphone(Cirrus Logic, MME (2 in, 0 out)\n  2 Microsoft 사운드 매퍼 - Output, MME (0 in, 2 out)\n< 3 헤드셋(Cirrus Logic CS8409 (AB 16), MME (0 in, 2 out)\n  4 스피커(Cirrus Logic CS8409 (AB 16), MME (0 in, 4 out)\n  5 Headphones (HD Audio 헤드폰), Windows WDM-KS (0 in, 2 out)\n  6 마이크 (HD Audio 마이크 2), Windows WDM-KS (2 in, 0 out)\n  7 마이크 (HD Audio 마이크), Windows WDM-KS (2 in, 0 out)\n  8 Speakers (HD Audio 스피커), Windows WDM-KS (0 in, 4 out)\n  9 Output (AMD HD Audio DP out #1), Windows WDM-KS (0 in, 2 out)\n"
+     }
+    ],
+    "source": [
+-- 
+2.28.0.windows.1
+
