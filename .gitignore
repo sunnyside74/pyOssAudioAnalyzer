@@ -1,1 +1,8 @@
+<<<<<<< HEAD
 .vscode/settings.json
+=======
+.vscode/
+patch.diff
+TyndallBruceMonument.wav.reapeaks
+.ipynb_checkpoints/TestPy-checkpoint.ipynb
+>>>>>>> recover1
