@@ -1,0 +1,36 @@
+https://www.openair.hosted.york.ac.uk/?page_id=602
+
+"Maes-Howe, Orkney, is one of the finest chambered cairns in Europe, and is dated to 3000BC. Prior work in the acoustics of ancient sites explores how the resonances exhibited therein might have affected regular human ritual and interaction with the space. It has been hypothesized that as these resonances are within the lower male vocal range, they may have been used in ritual to accentuate aspects of the voice. Unlike many similar ancient structures that have been studied to date, Maes Howe lends itself to the presence of strong modal frequencies. It is almost cubic in shape, of dimension 4.6m, with walls made from large, flat slabs of stone, resulting in smooth reflecting surfaces rather than more commonly found irregular placement of smaller stones."
+
+License for this content: Attribution Share Alike Creative Commons license
+
+Audio Attribution
+32Bit FLoat LE, Stereo, 44100 Hz
+
+Measurement Team: 
+Dr. Damian T. Murphy
+
+Capture Date: 
+Fri, 10/12/2004
+
+Size:
+100 m³
+
+Source Sound: 
+Log. Swept Sine; 20-22k Hz; 15s long
+
+Source Sound Category: 
+Swept sine (logarithmic)
+
+Input: 
+Genelec S30D
+
+Microphone(s): 
+Neumann KM 140 Cardioid
+Soundfield SPS422B Microphone
+
+Space Category: 
+Chamber
+
+Generation Type: 
+Real World
