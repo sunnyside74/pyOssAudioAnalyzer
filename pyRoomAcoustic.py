@@ -1,3 +1,9 @@
+"""
+Module to calcurate acoustic parameter using NumPy arrays
+
+from https://
+"""
+
 import numpy as np
 import scipy.stats as stats
 from scipy import signal
