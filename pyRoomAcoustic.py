@@ -9,7 +9,7 @@ import scipy.stats as stats
 from scipy import signal
 
 
-def T20(decayCurveNorm, fs=48000):
+def T20(decayCurveNorm, fs):
     """Calculate T20
 
     :param decayCurveNorm: is the normalized decay curve
@@ -21,7 +21,7 @@ def T20(decayCurveNorm, fs=48000):
     return T20, nonLin
 
 
-def T30(decayCurveNorm, fs=48000):
+def T30(decayCurveNorm, fs):
     """Calculate T30
 
     :param decayCurveNorm: is the normalized decay curve
@@ -34,7 +34,7 @@ def T30(decayCurveNorm, fs=48000):
     return T30, nonLin
 
 
-def T60(decayCurveNorm, fs=48000):
+def T60(decayCurveNorm, fs):
     """Calculate T60
 
     :param decayCurveNorm: is the normalized decay curve
@@ -47,7 +47,7 @@ def T60(decayCurveNorm, fs=48000):
     return T60, nonLin
 
 
-def EDT(decayCurveNorm, fs=48000):
+def EDT(decayCurveNorm, fs):
     """Calculate Early Decay Time (EDT)
 
     :param decayCurveNorm: is the normalized decay curve
@@ -60,7 +60,7 @@ def EDT(decayCurveNorm, fs=48000):
     return EDT, nonLin
 
 
-def C50(IR, fs=48000):
+def C50(IR, fs):
     """Calculate clarity for speech (C50)
 
     :param IR: impulse response
@@ -72,7 +72,7 @@ def C50(IR, fs=48000):
     return C50
 
 
-def C80(IR, fs=48000):
+def C80(IR, fs):
     """Calculate clarity for music (C80)
 
     :param IR: impulse response
@@ -84,7 +84,7 @@ def C80(IR, fs=48000):
     return C80
 
 
-def D50(IR, fs=48000):
+def D50(IR, fs):
     """Calculate definition (D50)
 
     :param IR: impulse response
@@ -96,7 +96,7 @@ def D50(IR, fs=48000):
     return D50
 
 
-def centreTime(IR, fs=48000):
+def centreTime(IR, fs):
     """Calculate the centre time from impulse response
 
     :param IR: impulse response
@@ -115,7 +115,7 @@ def centreTime(IR, fs=48000):
     return Ts
 
 
-def lateralEnergyFraction(IR, IROmni, fs=48000):
+def lateralEnergyFraction(IR, IROmni, fs):
     """Calculate the lateral energy fraction from two impuleses
 
     :param IR: is an impulse from a figure of eight microphone
@@ -151,7 +151,7 @@ def strength(IR, IRSpeaker):
 
 #### HELP FUNCTIONS ####
 
-def decayCurve(sig, estimate, fs=48000, noiseEnd=0):
+def decayCurve(sig, estimate, fs, noiseEnd=0):
     """Calculate the decay curve from a noise signal
 
     :param sig: noise signal
@@ -177,13 +177,13 @@ def exponential(S, tau, fs):
     return Ptau
 
 
-def _reverberation(decayCurveNorm, reqDBStart=-5, reqDBEnd=-60, fs=48000):
+def _reverberation(decayCurveNorm, fs, reqDBStart=-5, reqDBEnd=-60):
     """Calculate reverberation based on requirements for start and stop level
 
     :param decayCurveNorm: normalized decay curve
+    :param fs: sample rate
     :param reqDBStart: start level for reverberation (is -5 for T60 and 0 for EDT)
     :param reqDBEnd: end level for reverberation (is -60 for T60)
-    :param fs: sample rate
     :return: reveration
     """
 
@@ -206,6 +206,7 @@ def _reverberation(decayCurveNorm, reqDBStart=-5, reqDBEnd=-60, fs=48000):
             raise ValueError("The is no level below required {} dB".format(reqDBEnd))
 
         testDecay = decayCurveNorm[:, i][sample0dB:sample10dB]  # slice decaycurve to specific samples
+        print(testDecay.shape)  #for Debug
 
         slope, intercept, r_value, p_value, std_err = stats.linregress(np.linspace(sample0dB / fs, sample10dB / fs, np.size(testDecay, axis=0)), testDecay)  # calculate the slope and of signal nonlinearity
         nonLinearity[i] = np.round(1000 * (1 - r_value ** 2), 1)  # calculate the nonlinearity
@@ -216,12 +217,12 @@ def _reverberation(decayCurveNorm, reqDBStart=-5, reqDBEnd=-60, fs=48000):
     return T, nonLinearity
 
 
-def _clarity(IR, t=50, fs=48000):
+def _clarity(IR, fs, t=50):
     """Calculate the clarity from impulse response
 
     :param IR: impulse response
-    :param t: is the defined shift from early to late reflections (is often 50 ms or 80 ms)(ms)
     :param fs: sample rate
+    :param t: is the defined shift from early to late reflections (is often 50 ms or 80 ms)(ms)
     :return: clarity
     """
 
@@ -231,12 +232,12 @@ def _clarity(IR, t=50, fs=48000):
     return C
 
 
-def _definition(IR, t=50, fs=48000):
+def _definition(IR, fs, t=50):
     """Calculate the defintion from impulse response
 
     :param IR: impulse response
-    :param t: is the defined shift from early to late reflections (is often 50 ms)(ms)
     :param fs: sample rate
+    :param t: is the defined shift from early to late reflections (is often 50 ms)(ms)
     :return: definition
     """
 
