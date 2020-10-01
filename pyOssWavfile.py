@@ -624,7 +624,7 @@ def read(filename, mmap=False):
         else:
             fid.seek(0)
 
- #   print (fmt_chunk)      # for Debug
+ #   print ("fmt_chunk =", fmt_chunk)      # for Debug
 
     #return fs, data        # original
     return fmt_chunk, data, leng

@@ -8,6 +8,9 @@ import numpy as np
 import scipy.stats as stats
 from scipy import signal
 
+# Import Users
+import pyOssDebug as dbg
+
 
 def T20(decayCurveNorm, fs):
     """Calculate T20
@@ -16,7 +19,8 @@ def T20(decayCurveNorm, fs):
     :param fs: sample rate
     :return: T20
     """
-    T, nonLin = _reverberation(decayCurveNorm, -5, -25, fs)
+    #T, nonLin = _reverberation(decayCurveNorm, -5, -25, fs)
+    T, nonLin = _reverberation(decayCurveNorm, fs, -5, -25)
     T20 = T * 3
     return T20, nonLin
 
@@ -29,7 +33,8 @@ def T30(decayCurveNorm, fs):
     :return: T30
     """
 
-    T, nonLin = _reverberation(decayCurveNorm, -5, -35, fs)
+    #T, nonLin = _reverberation(decayCurveNorm, -5, -35, fs)
+    T, nonLin = _reverberation(decayCurveNorm, fs, -5, -35)
     T30 = T * 2
     return T30, nonLin
 
@@ -42,7 +47,8 @@ def T60(decayCurveNorm, fs):
     :return: T60
     """
 
-    T, nonLin = _reverberation(decayCurveNorm, -5, -65, fs)
+    #T, nonLin = _reverberation(decayCurveNorm, -5, -65, fs)
+    T, nonLin = _reverberation(decayCurveNorm, fs, -5, -65)
     T60 = T
     return T60, nonLin
 
@@ -55,7 +61,8 @@ def EDT(decayCurveNorm, fs):
     :return: EDT
     """
 
-    T, nonLin = _reverberation(decayCurveNorm, 0, -10, fs)
+    #T, nonLin = _reverberation(decayCurveNorm, 0, -10, fs)
+    T, nonLin = _reverberation(decayCurveNorm, fs, 0, -10)
     EDT = T * 6
     return EDT, nonLin
 
@@ -68,7 +75,8 @@ def C50(IR, fs):
     :return: C50
     """
 
-    C50 = _clarity(IR, 50, fs)
+    #C50 = _clarity(IR, 50, fs)
+    C50 = _clarity(IR, fs, 50)
     return C50
 
 
@@ -80,7 +88,8 @@ def C80(IR, fs):
     :return: C80
     """
 
-    C80 = _clarity(IR, 80, fs)
+    #C80 = _clarity(IR, 80, fs)
+    C80 = _clarity(IR, fs, 80)
     return C80
 
 
@@ -92,7 +101,8 @@ def D50(IR, fs):
     :return: D50
     """
 
-    D50 = _definition(IR, 50, fs)
+    #D50 = _definition(IR, 50, fs)
+    D50 = _definition(IR, fs, 50)
     return D50
 
 
@@ -187,26 +197,62 @@ def _reverberation(decayCurveNorm, fs, reqDBStart=-5, reqDBEnd=-60):
     :return: reveration
     """
 
+    func_name = "_reverbaration():"
+    #dbg.dPrint(func_name, "decayCurveNorm.ndim = ", decayCurveNorm.ndim)   # for Debug
+
     if decayCurveNorm.ndim == 1:
         decayCurveNorm = decayCurveNorm[:, np.newaxis]
+        #dbg.dprint(func_name, "decayCurveNorm.shape=", decayCurveNorm.shape)  #for Debug
+        #dbg.dprint(func_name, "after if decayCurveNorm.ndim == 1: ", decayCurveNorm.ndim)
+        #dbg.plotAudio(fs, decayCurveNorm[:, 0], "Normalized Decay Curve[0]", "Time(sec)", "Amplitude")   # for Debug
+        #dbg.plotAudio(fs, decayCurveNorm[:, 1], "Normalized Decay Curve[1]", "Time(sec)", "Amplitude") # for Debug (Error)
 
+    '''# for debug
+    temp1 = np.size(decayCurveNorm, axis=0)
+    temp2 = np.size(decayCurveNorm, axis=1)
+    temp3 = np.size(decayCurveNorm)
+    temp4 = np.zeros((temp2, 1))
+    temp5 = np.zeros((temp3, 1))
+
+    dbg.dPrint(func_name, "np.size(decayCurveNorm, axis=0)=", temp1)                    #for Debug
+    dbg.dPrint(func_name, "np.size(decayCurveNorm, axis=1)=", temp2)                    #for Debug
+    dbg.dPrint(func_name, "np.size(decayCurveNorm)=", temp3)                            #for Debug
+    dbg.dPrint(func_name, "np.zeros((np.size(decayCurveNorm, axis=1), 1)=", temp4)     #for Debug
+    dbg.dPrint(func_name, "np.zeros((np.size(decayCurveNorm), 1))=", temp5)             #for Debug
+    dbg.dPrint(func_name, "dim of np.zeros((np.size(decayCurveNorm), 1))=", temp5.ndim) #for Debug
+
+    dbg.plotAudio(fs, temp5, "Normalized Decay Curve[1]", "Time(sec)", "Amplitude")     #for Debug
+
+    # for debug end '''
+   
     # create return arrays based on number of decay curves
-    T = np.zeros((np.size(decayCurveNorm, axis=1), 1))
-    nonLinearity = np.zeros((np.size(decayCurveNorm, axis=1), 1))
+    T = np.zeros((np.size(decayCurveNorm, axis=1), 1))      # It' same np.zeros((2, 1))
+    nonLinearity = np.zeros((np.size(decayCurveNorm, axis=1), 1))     # It' same np.zeros((2, 1))
+    dbg.dPrint(func_name, "T=", T)    #for Debug
+    dbg.dPrint(func_name, "nonLinearity=", nonLinearity)    #for Debug
+
 
     for i in range(np.size(decayCurveNorm, axis=1)):
+        x_maxvalue = np.argmax(decayCurveNorm[:,i])
+        #y_maxvalue = np.max(decayCurveNorm[:,i])        # for Debug 
+        #print(func_name, "x= ", x_maxvalue, "y= ", y_maxvalue)    # for Debug
+
         try:
-            sample0dB = np.where(decayCurveNorm[:, i] < reqDBStart)[0][0]  # find first sample below 0 dB
+            #sample0dB = np.where(decayCurveNorm[:, i] < reqDBStart)[0][0]  # find first sample below 0 dB
+            sample0dB = np.where(decayCurveNorm[x_maxvalue:, i] < reqDBStart)[0][0]  # find first sample below 0 dB
+            print(func_name, "reqDBStart=", reqDBStart, ", sample0dB=", sample0dB)  #for Debug
         except IndexError:
             raise ValueError("The is no level below {} dB".format(reqDBStart))
 
         try:
             sample10dB = sample0dB + np.where(decayCurveNorm[:, i][sample0dB:] <= reqDBEnd)[0][0]  # find first sample below -10dB
+            print(func_name, "reqDBEnd=", reqDBEnd, ",  sample10dB=", sample10dB)  #for Debug
         except IndexError:
             raise ValueError("The is no level below required {} dB".format(reqDBEnd))
 
         testDecay = decayCurveNorm[:, i][sample0dB:sample10dB]  # slice decaycurve to specific samples
-        print(testDecay.shape)  #for Debug
+        #dbg.dPrint(func_name, "testDecay.shape=", testDecay.shape)  #for Debug
+        #dbg.plotAudio(fs, testDecay, "TestDecay", "Time(sec)", "Amplitude") # for Debug
 
         slope, intercept, r_value, p_value, std_err = stats.linregress(np.linspace(sample0dB / fs, sample10dB / fs, np.size(testDecay, axis=0)), testDecay)  # calculate the slope and of signal nonlinearity
         nonLinearity[i] = np.round(1000 * (1 - r_value ** 2), 1)  # calculate the nonlinearity
@@ -214,6 +260,7 @@ def _reverberation(decayCurveNorm, fs, reqDBStart=-5, reqDBEnd=-60):
         y = intercept + slope * x  # generate line with slop of calculated slope
 
         T[i] = len(y[np.where(y <= reqDBStart)[0][0]:np.where(y <= reqDBEnd)[0][0]]) / 1000  # calculate reverberation with 1 ms resolution from generated linear line
+
     return T, nonLinearity
 
 
@@ -245,3 +292,4 @@ def _definition(IR, fs, t=50):
     if D.ndim == 1:
         D = D[:, np.newaxis]
     return D
+
