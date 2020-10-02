@@ -16,7 +16,7 @@ import pyOssWavfile
 
 #%matplotlib tk
 
-def plotAudio(audio_fs, data_plot, label_txt=" ", xl_txt="x", yl_txt="y"):
+def dPlotAudio(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y"):
 	"""
     plot audio array using matplot for debug
 
@@ -24,7 +24,8 @@ def plotAudio(audio_fs, data_plot, label_txt=" ", xl_txt="x", yl_txt="y"):
     ----------
 	audio_fs: samplig frequency of audio file from audio fromat chunk
     data_plot : data for plot
-	label_txt : ,optional
+	title_txt : , optional
+	label_txt : , optional
 	xl_txt : , optional
 	yl_txt : , optional
 
@@ -35,6 +36,7 @@ def plotAudio(audio_fs, data_plot, label_txt=" ", xl_txt="x", yl_txt="y"):
 	end_time = data_plot.shape[0] / audio_fs	# fs: audio_fmt_chunk[3]
 
 	plot_time = np.linspace(start_time, end_time, data_plot.shape[0])
+	plt.title(title_txt)
 	plt.plot(plot_time, data_plot, label=label_txt)
 	plt.legend()
 	plt.xlabel(xl_txt)
