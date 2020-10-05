@@ -24,8 +24,9 @@ def convPaSampleFormat(aud_fmt, bitdepth):
 	"""
 	Covert from AUdio Format & Bit per sample in wav format chunk to pyaudio sample format  
 
-	----
-	return
+
+	Return
+	-------
 		r: pyaudio format
 	"""
 	
@@ -39,3 +40,25 @@ def convPaSampleFormat(aud_fmt, bitdepth):
 
 	return r
 
+
+def convFloat32toInt16(aud_data):
+	"""
+	Convert float32 audio data to int16
+
+	Parameters
+	----------
+	aud_data: audio data numpy array
+
+	Return
+	----------
+	data: audio data converted int16 
+	"""
+
+	# if np.dtype(aud_data) != "float32":
+	# 	printf("It's not float32 audio data")
+	# 	pass
+	# else:
+	
+	ret_data = np.int16(aud_data * 32767)
+
+	return ret_data

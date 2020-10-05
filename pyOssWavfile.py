@@ -596,6 +596,8 @@ def read(filename, mmap=False):
                 #format_tag, channels, fs = fmt_chunk[1:4]      # original
                 format_tag, channels = fmt_chunk[1:3]   
                 bit_depth = fmt_chunk[6]
+                if bit_depth == 24:
+                    bit_depth = 32
                 if bit_depth not in {8, 16, 32, 64, 96, 128}:
                     raise ValueError("Unsupported bit depth: the wav file "
                                      "has {}-bit data.".format(bit_depth))
