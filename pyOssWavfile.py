@@ -764,6 +764,7 @@ def _array_tofile(fid, data):
 
 def extractWavFmtChunk(wav_fmt_chunk):
     """
+    Made by OSS 
     Etract wavefile information from wav format chunk data array
     Need to 'fmt_chunk' data after use read() function
 
@@ -797,3 +798,9 @@ def extractWavFmtChunk(wav_fmt_chunk):
     audformat, numch, fs, byterate, blockalign, bitdepth = wav_fmt_chunk[1:7]
 
     return audformat, numch, fs, byterate, blockalign, bitdepth
+
+# def convPaSampleFormat(bitdepth):
+
+#     if bitdepth == 'float32':
+#         r = 
+
