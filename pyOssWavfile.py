@@ -399,7 +399,7 @@ def _read_data_chunk(fid, format_tag, channels, bit_depth, is_big_endian,
 
     # Size of the data subchunk in bytes
     size = struct.unpack(fmt, fid.read(4))[0]   # Sub Chunk2 Size (4 Byte Little Endian)
-#    print(size) #for Debug
+    # print(size) #for Debug
 
     # Number of bytes per sample
     bytes_per_sample = bit_depth//8
@@ -590,15 +590,13 @@ def read(filename, mmap=False):
             if chunk_id == b'fmt ':
                 fmt_chunk_received = True
                 fmt_chunk = _read_fmt_chunk(fid, is_big_endian)
-                #print (fmt_chunk)   # for Debug
+                # print (fmt_chunk)   # for Debug
                 # fmt_chunk[0]: Subchunk1 Size, [1]: Audio Format, [2]: Num of Channels, [3]: Sample Rate, [4]: Byte Ratge
                 # fmt_chunk[5]: Block Align, [6]: Bits for Sample(bit depth)
                 #format_tag, channels, fs = fmt_chunk[1:4]      # original
                 format_tag, channels = fmt_chunk[1:3]   
                 bit_depth = fmt_chunk[6]
-                if bit_depth == 24:
-                    bit_depth = 32
-                if bit_depth not in {8, 16, 32, 64, 96, 128}:
+                if bit_depth not in {8, 16, 24, 32, 64, 96, 128}:
                     raise ValueError("Unsupported bit depth: the wav file "
                                      "has {}-bit data.".format(bit_depth))
             elif chunk_id == b'fact':
@@ -607,8 +605,13 @@ def read(filename, mmap=False):
                 data_chunk_received = True
                 if not fmt_chunk_received:
                     raise ValueError("No fmt chunk before data")
-                data, leng = _read_data_chunk(fid, format_tag, channels, bit_depth,
-                                        is_big_endian, mmap)
+                
+                if bit_depth == 24:
+                    raise ValueError("Unsupported bit depth: the wav file "
+                                     "has {}-bit data. "
+                                     "Use soundfile.read() in soundfile.py.".format(bit_depth))
+                else:
+                    data, leng = _read_data_chunk(fid, format_tag, channels, bit_depth, is_big_endian, mmap)
                 #print(leng) # for Debug
             elif chunk_id == b'LIST':
                 # Someday this could be handled properly but for now skip it
@@ -777,7 +780,8 @@ def extractWavFmtChunk(wav_fmt_chunk):
 
     Returns
     -------
-    audformat : int
+
+    format : int
         Audio File Data Format.
         See the class WAVE_FORMAT.
     numch : int
@@ -797,12 +801,121 @@ def extractWavFmtChunk(wav_fmt_chunk):
     """
     
     # Etract wavefile information from wav format chunk data array
-    audformat, numch, fs, byterate, blockalign, bitdepth = wav_fmt_chunk[1:7]
+    format, ch, fs, byterate, blockalign, bitdepth = wav_fmt_chunk[1:7]
+    struct_fmt_chunk = CWavHeaderInfo(format, ch, fs, byterate, blockalign, bitdepth)
 
-    return audformat, numch, fs, byterate, blockalign, bitdepth
+    return struct_fmt_chunk
 
-# def convPaSampleFormat(bitdepth):
 
-#     if bitdepth == 'float32':
-#         r = 
+def read_format(filename, mmap=False):
+    """
+    Open a WAV file
 
+    Return the subchunk1from a WAV file.
+
+    Parameters
+    ----------
+    filename : string or open file handle
+        Input wav file.
+    mmap : bool, optional
+        Whether to read data as memory-mapped.
+        Only to be used on real files (Default: False).
+
+        .. versionadded:: 0.12.0
+
+    Returns
+    -------
+    fmt_chunk : numpy array
+        wav file header Informations (subchunk1) from _read_fmt_chunk(...)
+
+    Notes
+    -----
+    This function cannot read wav files with 24-bit data.
+
+    Common data types: [1]_
+
+    =====================  ===========  ===========  =============
+         WAV format            Min          Max       NumPy dtype
+    =====================  ===========  ===========  =============
+    32-bit floating-point  -1.0         +1.0         float32
+    32-bit PCM             -2147483648  +2147483647  int32
+    16-bit PCM             -32768       +32767       int16
+    8-bit PCM              0            255          uint8
+    =====================  ===========  ===========  =============
+
+    Note that 8-bit PCM is unsigned.
+
+    References
+    ----------
+    .. [1] IBM Corporation and Microsoft Corporation, "Multimedia Programming
+       Interface and Data Specifications 1.0", section "Data Format of the
+       Samples", August 1991
+       http://www.tactilemedia.com/info/MCI_Control_Info.html
+
+    """
+    if hasattr(filename, 'read'):
+        fid = filename
+        mmap = False
+    else:
+        fid = open(filename, 'rb')
+
+    try:
+        file_size, is_big_endian = _read_riff_chunk(fid)
+        fmt_chunk_received = False
+        data_chunk_received = False
+        channels = 1
+        bit_depth = 8
+        format_tag = WAVE_FORMAT.PCM
+        while fid.tell() < file_size:
+            # read the next chunk
+            chunk_id = fid.read(4)
+
+            if not chunk_id:
+                if data_chunk_received:
+                    # End of file but data successfully read
+                    warnings.warn(
+                        "Reached EOF prematurely; finished at {:d} bytes, "
+                        "expected {:d} bytes from header."
+                        .format(fid.tell(), file_size),
+                        WavFileWarning, stacklevel=2)
+                    break
+                else:
+                    raise ValueError("Unexpected end of file.")
+            elif len(chunk_id) < 4:
+                msg = f"Incomplete chunk ID: {repr(chunk_id)}"
+                # If we have the data, ignore the broken chunk
+                if fmt_chunk_received and data_chunk_received:
+                    warnings.warn(msg + ", ignoring it.", WavFileWarning, stacklevel=2)
+                else:
+                    raise ValueError(msg)
+
+            if chunk_id == b'fmt ':
+                fmt_chunk_received = True
+                fmt_chunk = _read_fmt_chunk(fid, is_big_endian)
+                #print (fmt_chunk)   # for Debug
+                # fmt_chunk[0]: Subchunk1 Size, [1]: Audio Format, [2]: Num of Channels, [3]: Sample Rate, [4]: Byte Ratge
+                # fmt_chunk[5]: Block Align, [6]: Bits for Sample(bit depth)
+                #format_tag, channels, fs = fmt_chunk[1:4]      # original
+                format_tag, channels = fmt_chunk[1:3]   
+                bit_depth = fmt_chunk[6]
+
+                if bit_depth not in {8, 16, 24, 32, 64, 96, 128}:
+                    raise ValueError("Unsupported bit depth: the wav file "
+                                     "has {}-bit data.".format(bit_depth))
+
+    finally:
+        if not hasattr(filename, 'read'):
+            fid.close()
+        else:
+            fid.seek(0)
+
+    return fmt_chunk
+
+class CWavHeaderInfo:
+    def __init__(self, format, ch, fs, byterate, blockalign, bitdepth):
+        self.format = format
+        self.ch = ch
+        self.fs = fs
+        self.byterate = byterate
+        self.blockalign = blockalign
+        self.bitdepth = bitdepth
