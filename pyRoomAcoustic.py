@@ -9,7 +9,6 @@ import scipy.stats as stats
 from scipy import signal
 
 # Import Users
-import pyOssPyAudio
 import pyOssDebug as dbg
 
 
@@ -248,15 +247,7 @@ def _clarity(IR, fs, t=50):
     :return: clarity
     """
 
-    # if IR.dtype == np.float32:
-    #     IR = pyOssPyAudio.convFloat32toInt16(IR)
-
-    # print("np.int64((t / 1000) * fs) =", np.int64((t / 1000) * fs))
-
     C = 10 * np.log10(np.sum(IR[0:np.int64((t / 1000) * fs)] ** 2, axis=0) / np.sum(IR[np.int64((t / 1000) * fs):] ** 2, axis=0))
-
-    # print(C)
-    # print(C.dtype)
 
     if C.ndim == 1:
         C = C[:, np.newaxis]
@@ -271,11 +262,9 @@ def _definition(IR, fs, t=50):
     :param t: is the defined shift from early to late reflections (is often 50 ms)(ms)
     :return: definition
     """
-    if IR.dtype == np.float32:
-        IR = pyOssPyAudio.convFloat32toInt16(IR)
-
 
     D = np.sum(IR[0:np.int64(t / 1000 * fs)] ** 2, axis=0) / np.sum(IR ** 2, axis=0)
+
     if D.ndim == 1:
         D = D[:, np.newaxis]
     return D
