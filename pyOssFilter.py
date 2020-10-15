@@ -12,16 +12,18 @@ import io
 import os
 import sys
 import time
+import math
 
 # Import Audio
 import wave
 import pyaudio
-#import librosa
+import librosa
 
-import numpy as np
-from scipy.io import wavfile
-import scipy.signal as sig
+import numpy
+import scipy
+import scipy.signal as signal
 import matplotlib.pyplot as plt
+import matplotlib.animation
 import soundfile
 
 # User Libraries
@@ -34,6 +36,8 @@ def bandpass_filter(data, lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
-    b, a = butter(order, [low, high], btype='bandpass')
-    filtered = lfilter(b, a, data)
+    b, a = signal.butter(order, [low, high], btype='bandpass')
+    filtered = signal.lfilter(b, a, data)
     return filtered
+
+
