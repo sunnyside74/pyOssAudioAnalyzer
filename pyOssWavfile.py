@@ -14,6 +14,7 @@ Functions
 """
 
 import sys
+import os
 import numpy
 import struct
 import warnings
