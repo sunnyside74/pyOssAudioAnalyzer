@@ -49,13 +49,13 @@ def bandpass_filter(data, lowcut, highcut, fs, order=5):
     return filtered
 
 def bp_cf_to_band_range(fc, octave=0):
-    if octave == 1:
+    if octave == 3:
         f1 = math.trunc(fc / (math.sqrt(2**(1/3))))
         f2 = math.trunc(fc * (math.sqrt(2**(1/3))))
     else:
         f1 = math.trunc(0.707 * fc)
         f2 = math.trunc(1.414 * fc)
-    print(f1, f2)
+    #print(f1, f2)
 
     return f1, f2
 

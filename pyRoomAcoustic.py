@@ -197,7 +197,7 @@ def _reverberation(decayCurveNorm, fs, reqDBStart=-5, reqDBEnd=-60):
     :return: reveration
     """
 
-    #func_name = "_reverbaration():"     # for debug
+    func_name = "_reverbaration():"     # for debug
 
     if decayCurveNorm.ndim == 1:
         decayCurveNorm = decayCurveNorm[:, np.newaxis]
@@ -208,25 +208,25 @@ def _reverberation(decayCurveNorm, fs, reqDBStart=-5, reqDBEnd=-60):
 
     for i in range(np.size(decayCurveNorm, axis=1)):
         x_maxvalue = np.argmax(decayCurveNorm[:,i])
-        #print(func_name,"x_maxvalue =", x_maxvalue, "y_value at x_max =", np.max(decayCurveNorm[:,i]))      # for debug
-        #x_maxsearch = np.where(decayCurveNorm[:,i] == 0)[0][0]                                              # for debug
-        #print(func_name,"x_maxsearch =", x_maxsearch, "y_value at x_max search =", decayCurveNorm[x_maxsearch,i])     # for debug
+        print(func_name,"x_maxvalue =", x_maxvalue, "y_value at x_max =", np.max(decayCurveNorm[:,i]))      # for debug
+        x_maxsearch = np.where(decayCurveNorm[:,i] == 0)[0][0]                                              # for debug
+        print(func_name,"x_maxsearch =", x_maxsearch, "y_value at x_max search =", decayCurveNorm[x_maxsearch,i])     # for debug
 
         try:
             #sample0dB = np.where(decayCurveNorm[:, i] < reqDBStart)[0][0]  # find first sample below 0 dB (Original Code no work)
             sample0dB = x_maxvalue + np.where(decayCurveNorm[x_maxvalue:, i] < reqDBStart)[0][0]  # find first sample below 0 dB
-            #print(func_name, "reqDBStart=", reqDBStart, ", sample0dB=", sample0dB)  #for Debug
+            print(func_name, "reqDBStart=", reqDBStart, ", sample0dB=", sample0dB)  #for Debug
         except IndexError:
             raise ValueError("The is no level below {} dB".format(reqDBStart))
 
         try:
             sample10dB = sample0dB + np.where(decayCurveNorm[:, i][sample0dB:] <= reqDBEnd)[0][0]  # find first sample below -10dB
-            #print(func_name, "reqDBEnd=", reqDBEnd, ",  sample10dB=", sample10dB)  #for Debug
+            print(func_name, "reqDBEnd=", reqDBEnd, ",  sample10dB=", sample10dB)  #for Debug
         except IndexError:
             raise ValueError("The is no level below required {} dB".format(reqDBEnd))
 
         testDecay = decayCurveNorm[:, i][sample0dB:sample10dB]  # slice decaycurve to specific samples
-        #dbg.dPlotAudio(fs, testDecay, "testDecay", "", "Time(sec)", "Amplitude") # for Debug
+        dbg.dPlotAudio(fs, testDecay, "testDecay", "", "Time(sec)", "Amplitude") # for Debug
 
         slope, intercept, r_value, p_value, std_err = stats.linregress(np.linspace(sample0dB / fs, sample10dB / fs, np.size(testDecay, axis=0)), testDecay)  # calculate the slope and of signal nonlinearity
         nonLinearity[i] = np.round(1000 * (1 - r_value ** 2), 1)  # calculate the nonlinearity

@@ -108,3 +108,6 @@ GitHub.sublime-settings
 # USER
 patch.diff
 TyndallBruceMonument.wav.reapeaks
+audiofiles/adult_female_speech_8000Hz.filtered.wav
+audiofiles/adult_female_speech.with.MaesHowe.conv.wav
+audiofiles/adult_female_speech.with.mh3_000_ortf_48k.conv.wav
