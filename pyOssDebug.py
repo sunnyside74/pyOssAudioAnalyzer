@@ -87,3 +87,30 @@ def dPrint(func_name, dText, dData):
     -------
 	"""
 	print (func_name, dText, dData)
+
+
+def dWavInfo(fname):
+	"""
+	Print Wave File Information
+
+	Parameters
+	----------
+	fname: wave file path & name
+	Retruns
+	--------
+	"""
+
+	struct_fmt = pyOssWavfile.extractWavFmtChunk(pyOssWavfile.read_format(fname))
+
+	print("Audio Format =", struct_fmt.format)
+	print("Number of Channel =", struct_fmt.ch)
+	print("Sampling Frequency =", struct_fmt.fs)
+	print("Byte Rate =", struct_fmt.byterate)       # 일종의 Checksum 
+	print("Block Align =", struct_fmt.blockalign)
+	print("Bits per Sample =", struct_fmt.bitdepth)
+	# print("Time =", time, "sec")
+	# print("Length = ", data.shape[0])
+
+
+
+

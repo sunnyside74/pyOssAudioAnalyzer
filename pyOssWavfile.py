@@ -903,6 +903,22 @@ def read_format(filename, mmap=False):
                 if bit_depth not in {8, 16, 24, 32, 64, 96, 128}:
                     raise ValueError("Unsupported bit depth: the wav file "
                                      "has {}-bit data.".format(bit_depth))
+            elif chunk_id == b'fact':
+                _skip_unknown_chunk(fid, is_big_endian)
+            elif chunk_id == b'data':
+                data_chunk_received = True
+                if not fmt_chunk_received:
+                    raise ValueError("No fmt chunk before data")
+            elif chunk_id == b'LIST':
+                # Someday this could be handled properly but for now skip it
+                _skip_unknown_chunk(fid, is_big_endian)
+            elif chunk_id in {b'JUNK', b'Fake'}:
+                # Skip alignment chunks without warning
+                _skip_unknown_chunk(fid, is_big_endian)
+            else:
+                warnings.warn("Chunk (non-data) not understood, skipping it.",
+                              WavFileWarning, stacklevel=2)
+                _skip_unknown_chunk(fid, is_big_endian)
 
     finally:
         if not hasattr(filename, 'read'):
@@ -911,6 +927,7 @@ def read_format(filename, mmap=False):
             fid.seek(0)
 
     return fmt_chunk
+
 
 class CWavHeaderInfo:
     def __init__(self, format, ch, fs, byterate, blockalign, bitdepth):

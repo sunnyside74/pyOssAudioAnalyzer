@@ -33,7 +33,6 @@ import pyOssDebug as dbg
 
 
 
-
 def bandpass_filter(data, lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
@@ -48,16 +47,113 @@ def bandpass_filter(data, lowcut, highcut, fs, order=5):
     filtered = signal.lfilter(b, a, data)
     return filtered
 
-def bp_cf_to_band_range(fc, octave=0):
-    if octave == 3:
+def band_range(fc, octave=0):
+    """ Calculation Octave Band Range
+    
+    Parameters
+    ------------
+    fc: Center Frequency of Band Pass Filter
+    octave: 3: 1/3 Octave Band, Others: 1/1 Octave
+
+    Returns
+    ------------
+    f1: 
+    f2: 
+
+    """
+    if octave == 3:     # 1/3 octave band
         f1 = math.trunc(fc / (math.sqrt(2**(1/3))))
         f2 = math.trunc(fc * (math.sqrt(2**(1/3))))
-    else:
+    else:               # 1 octave band
         f1 = math.trunc(0.707 * fc)
         f2 = math.trunc(1.414 * fc)
     #print(f1, f2)
 
     return f1, f2
+
+
+def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
+    """
+    Parameters
+    -----------
+        in_data: input data array
+        fs: sampling freq.
+        fc: Center Freq. of Band Pass Filter
+        filt_type: Filter Type
+                'butt': Butterworth IIR Filter using bandpass_filter function(default)
+                'fir': FIR Filter with Hamming window using scipy.signal.firwin & fftconvolve 
+        order_tab:  On butterworth, order (recommand order =< 4)
+                    On fir, tab size
+        RT60: Calculation real RT60 if set True (Not recommand) 
+        fname: file name string of input data
+    
+    Returns
+    ----------
+    data_filtered: filtered data
+    decaycurve: Normalized Decay Curve from Filtered Data 
+    acoustic_param: array RT60, EDT, D50, C50, C80
+    """
+    if in_data.ndim != 1:
+        data = in_data[:,0]
+        str_ch_name = "Left Channel"
+    else:
+        data = in_data
+        str_ch_name = "Mono"
+
+    time = data.shape[0] / fs
+
+    # Octave Band Pass Filter Range 
+    band_f1, band_f2 = band_range(fc)
+
+    if filt_type == 'butt':
+        # Band Pass Filter Butterworth 2th order
+        filter_name = "Butterworth 2nd Order" 
+        data_filtered = bandpass_filter(data, band_f1, band_f2, fs, order=order_tab)
+    elif filt_type == 'fir': 
+        # Band Pass Filter FIR Hamming
+        filter_name = "FIR" + str(order_tab) + "tab Hamming"
+        firtab = order_tab
+        if band_f2 > 20000:
+            band_f2 = 20000
+        coef_fir1 = numpy.float32(signal.firwin(firtab, [band_f1, band_f2], pass_zero=False, fs=fs))
+        data_filtered = signal.fftconvolve(data, coef_fir1)
+
+    # Plot Filtered Impulse Data
+    dbg.dPlotAudio(fs, data_filtered, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+
+    # Calculation Normalized Decay Curve
+    decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))
+    dbg.dPlotAudio(fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+
+    # Calculation Acoustic Parameters
+    data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)
+    data_t20, impulse_t20nonLin = room.T20(decaycurve, fs)
+    data_t30, impulse_t30nonLin = room.T30(decaycurve, fs)
+    if RT60 is True:
+        data_t60, impulse_t60nonLin = room.RT60(decaycurve, fs) 
+    else:
+        data_t60 = data_t30 * 2
+    data_D50 = room.D50(data_filtered, fs)
+    data_C80 = room.C80(data_filtered, fs)
+    data_C50 = room.C50(data_filtered, fs)
+
+    acoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+
+    print("Impulse Name: " + fname + ", Filter: " + filter_name + ", " + str(fc) + "Hz" )
+    print("T10=", data_EDT/6)      # for Debug
+    print("T20=", data_t20)          # for Debug
+    print("T30=", data_t30)          # for Debug
+    if RT60 is True:
+        print("RT60(Real)=", data_t60)            # for Debug
+    else:
+        print("RT60(from T30*2)=", data_t60)            # for Debug
+    print("EDT=", data_EDT)            # for Debug
+    print("D50=", data_D50)         # for Debug
+    print("C50=", data_C50)         # for Debug
+    print("C80=", data_C80)         # for Debug
+
+    return  data_filtered, decaycurve, acoustic_param
+
 
 '''
 from scipy.signal import firwin, remez, kaiser_atten, kaiser_beta
@@ -137,3 +233,11 @@ if __name__ == "__main__":
 
     plt.show()
     '''
+
+class CAcousticParameter:
+    def __init__(self, RT60, EDT, D50, C50, C80):
+        self.RT60 = RT60
+        self.EDT = EDT
+        self.D50 = D50
+        self.C50 = C50
+        self.C80 = C80
