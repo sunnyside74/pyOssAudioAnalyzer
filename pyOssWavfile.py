@@ -6,9 +6,7 @@ Functions
 ---------
 
 `read`: Return the sample rate (in samples/sec) and data from a WAV file.
-
 `write`: Write a NumPy array as a WAV file.
-
 'extractWavFmtChunk' : Extract Wav File Attribution in wav file header. Need read function
 
 """
@@ -20,11 +18,16 @@ import struct
 import warnings
 from enum import IntEnum
 
+import librosa              # for format convert
+import soundfile            # read 24bit integer wav file
+
+
 __all__ = [
     'WavFileWarning',
     'read',
     'write',
     'extractWavFmtChunk'
+    'srt_fname'
 ]
 
 
@@ -812,7 +815,7 @@ def read_format(filename, mmap=False):
     """
     Open a WAV file
 
-    Return the subchunk1from a WAV file.
+    Return the subchunk1 from a WAV file.
 
     Parameters
     ----------
@@ -927,6 +930,161 @@ def read_format(filename, mmap=False):
             fid.seek(0)
 
     return fmt_chunk
+
+
+def str_fname(path_name, wav_name, ext='wav'):
+    ''' string of the pcm audio data array file path & name
+
+    Parameters
+    ----------
+    path_name: path of wav file in project folder
+    wav_name: wave file name except .wav
+    ext: string of extenstion ('wav' of 'npy')
+
+    Return
+    ------
+    fullname: string of audio data array file's path + file name + extension
+    '''
+
+    fdir = os.path.join(os.getcwd(), path_name)
+    fwname = wav_name + '.' + ext
+    fullname = os.path.join(fdir, fwname)
+
+    return fullname
+
+
+def readf32(filename, mmap=False):
+    """ 
+    .wav file read as type float32 & mono & 44100Hz any format 
+    use pyOssWavfile.read() or soundfile.read()
+    need pyOssWavefile.py & pysoundfile package
+
+    Parameters
+    ----------
+    filename: .wav file's full name(path+filename)
+    mmap=False: read() function's parameter for memcopy
+
+    Returns
+    -------
+    fmt_chunk: wave file header subchunk1 data
+    data: Audio Data Array float32 (-1.0 ~ 1.0 ), Mono, 44100Hz
+    length: 
+    struct_fmt: extract header information structure
+    time: time of audio
+
+    """
+
+    fmt_chunk = read_format(filename)
+    struct_fmt = extractWavFmtChunk(fmt_chunk)
+
+    if struct_fmt.bitdepth == 24:        # Bitdepth가 24bit일 때는 pysoundfile을 이용하여 wav data를 불러옴
+        ori_data, struct_fmt.fs = soundfile.read(filename, dtype='int32')
+    else:                                       # 그 외에는 scipy.io.wavfile을 수정한 함수 pyOssWavfile을 이용하여 wav data를 불러옴
+        fmt_chunk, ori_data, length = read(filename, mmap)
+
+    # Convert Mono
+    if struct_fmt.ch > 1:
+        temp_data = ori_data[:,0]        # only 1 channel if data is upto 2ch
+        struct_fmt.ch = 1
+    else:
+        temp_data = ori_data
+
+    # Type Conversion float32 & Normalize(-1.0 ~ 1.0) (except 8 bit audio)
+    if temp_data.dtype == 'int16':
+        temp_data = numpy.float32(temp_data/(2**15-1))
+    elif temp_data.dtype == 'int32':
+        temp_data = numpy.float32(temp_data/(2**31-1))
+    elif temp_data.dtype == 'float64':
+        temp_data = numpy.float32(temp_data)
+
+    if (temp_data.dtype == 'float32'):
+        struct_fmt.format = 3
+        struct_fmt.bitdepth = 32
+
+    # Sampling rate Convert to 44100 Hz use librosa resampling
+    if struct_fmt.fs != 44100:
+        temp_data = librosa.resample(temp_data, struct_fmt.fs, 44100)
+        struct_fmt.fs = 44100
+
+    # Format Chunk Update 
+        
+    data = temp_data    
+
+    time = data.shape[0] / struct_fmt.fs
+
+    return fmt_chunk, data, struct_fmt, time
+
+
+def insertSilence(data, fs, ins_time):
+    """
+    Insert silence data 
+
+    Parameters
+    ----------
+    : data: audio data
+    fs: sample rate
+    ins_time: time for inserting silence (unit: sec)
+
+    Return
+    ------
+    inserted_data: silence inserted data
+
+    """
+    ins_data_length = ins_time * fs
+
+    if (data.ndim > 1) :
+        silence_data = numpy.zeros(numpy.int32(ins_data_length), data.ndim)
+    else:
+        silence_data = numpy.zeros(numpy.int32(ins_data_length))
+
+    append_data = numpy.append(data, silence_data)
+
+    return append_data
+
+
+def load_oss_npz(fname):
+    """
+    Parameters
+    ----------
+    : fname: file name with path + .npz
+
+    Returns
+    -------
+    : data: audio data array
+    : struct_fmt: structure audio format chunk
+    : t: audio file time (sec)
+    """
+    with numpy.load(fname) as npz_array:
+        fmt_array = npz_array['info']
+        data = npz_array['data']
+
+    struct_fmt = CWavHeaderInfo(0,0,0,0,0,0)
+
+    struct_fmt.format = numpy.int(fmt_array[0])
+    struct_fmt.ch = numpy.int(fmt_array[1])
+    struct_fmt.fs = numpy.int(fmt_array[2])
+    struct_fmt.bitdepth = numpy.int(fmt_array[3])
+    t = fmt_array[4]
+    return data, struct_fmt, t 
+
+
+
+def save_oss_npz(fname, data, struct_fmt, t):
+    """
+    Parameters
+    ----------
+    : fname: file name with path
+    : data: audio data array
+    : struct_fmt: structure audio format chunk
+    : t: audio file time (sec)
+
+    Return
+    ------
+    None
+    """
+    fmt_array = [struct_fmt.format, struct_fmt.ch, struct_fmt.fs, struct_fmt.bitdepth, t]
+    numpy.savez(fname, info = fmt_array, data=data)
+
 
 
 class CWavHeaderInfo:

@@ -95,18 +95,29 @@ def dWavInfo(fname):
 
 	Parameters
 	----------
-	fname: wave file path & name
+	fname: wave file path & name or struct_format_chunk
 	Retruns
 	--------
+	None
 	"""
 
-	struct_fmt = pyOssWavfile.extractWavFmtChunk(pyOssWavfile.read_format(fname))
+	if type(fname) == str:		# when file name with path string
+		struct_fmt = pyOssWavfile.extractWavFmtChunk(pyOssWavfile.read_format(fname))
+	else:						# when fname is struct_fmt data
+		struct_fmt = fname
+	
+	if struct_fmt.format == 1:
+		str_format = 'Int'
+	elif struct_fmt.format == 3:
+		str_format = 'float'
+	else:
+		str_format = struct_fmt.format
 
-	print("Audio Format =", struct_fmt.format)
+	print("Audio Format =", str_format)
 	print("Number of Channel =", struct_fmt.ch)
 	print("Sampling Frequency =", struct_fmt.fs)
-	print("Byte Rate =", struct_fmt.byterate)       # 일종의 Checksum 
-	print("Block Align =", struct_fmt.blockalign)
+	# print("Byte Rate =", struct_fmt.byterate)       # 일종의 Checksum 
+	# print("Block Align =", struct_fmt.blockalign)
 	print("Bits per Sample =", struct_fmt.bitdepth)
 	# print("Time =", time, "sec")
 	# print("Length = ", data.shape[0])

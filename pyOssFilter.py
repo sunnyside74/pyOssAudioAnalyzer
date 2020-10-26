@@ -11,54 +11,30 @@ import struct
 import io
 import os
 import sys
-import time
 import math
 
-# Import Audio
-import wave
-import pyaudio
-import librosa
-
+# Import Signal Process
 import numpy
-import scipy
 import scipy.signal as signal
 import matplotlib.pyplot as plt
-import matplotlib.animation
-import soundfile
 
 # User Libraries
-import pyOssWavfile
-import pyRoomAcoustic as room
-import pyOssDebug as dbg
+import pyRoomAcoustic as room       # room acoustic parameter
+import pyOssDebug as dbg            # for debug
 
-
-
-def bandpass_filter(data, lowcut, highcut, fs, order=5):
-    nyq = 0.5 * fs
-    low = lowcut / nyq
-    if highcut >= nyq:
-        #high = (nyq - 1) / nyq
-        high = 0.99
-    else:
-        high = highcut / nyq
-
-    print(high)
-    b, a = signal.butter(order, [low, high], btype='bandpass')
-    filtered = signal.lfilter(b, a, data)
-    return filtered
 
 def band_range(fc, octave=0):
     """ Calculation Octave Band Range
     
     Parameters
     ------------
-    fc: Center Frequency of Band Pass Filter
+    fc: Center Frequency of bandpass Filter
     octave: 3: 1/3 Octave Band, Others: 1/1 Octave
 
     Returns
     ------------
-    f1: 
-    f2: 
+    f1: low cutoff frequency of bandpass filter
+    f2: high cutoff frequency of bandpass filter
 
     """
     if octave == 3:     # 1/3 octave band
@@ -72,8 +48,41 @@ def band_range(fc, octave=0):
     return f1, f2
 
 
-def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
+
+def bandpass_filter(data, lowcut, highcut, fs, order=5):
+    """ butterworth bandpass filter Process
+    
+    Parameters
+    ------------
+    data: signal data for filtering
+    lowcut: low cutoff frequency of bandpass filter
+    highcut: High cutoff frequency of bandpass filter
+    fs: Center Frequency of Band Pass Filter
+    order: butterworth filter order
+
+    Returns
+    ------------
+    filtered: filtered signal data 
+
     """
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    if highcut >= nyq:
+        #high = (nyq - 1) / nyq
+        high = 0.99
+    else:
+        high = highcut / nyq
+
+    print(high)
+    b, a = signal.butter(order, [low, high], btype='bandpass')
+    filtered = signal.lfilter(b, a, data)
+    return filtered
+
+
+
+def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
+    """ Impulse 
+
     Parameters
     -----------
         in_data: input data array
@@ -82,16 +91,16 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
         filt_type: Filter Type
                 'butt': Butterworth IIR Filter using bandpass_filter function(default)
                 'fir': FIR Filter with Hamming window using scipy.signal.firwin & fftconvolve 
-        order_tab:  On butterworth, order (recommand order =< 4)
-                    On fir, tab size
+        order_tab:  On butterworth, filter's order (recommand order =< 4)
+                    On fir, FIR filter's tab size
         RT60: Calculation real RT60 if set True (Not recommand) 
         fname: file name string of input data
     
     Returns
     ----------
-    data_filtered: filtered data
-    decaycurve: Normalized Decay Curve from Filtered Data 
-    acoustic_param: array RT60, EDT, D50, C50, C80
+        data_filtered: filtered data
+        decaycurve: Normalized Decay Curve from Filtered Data 
+        acoustic_param: array RT60, EDT, D50, C50, C80
     """
     if in_data.ndim != 1:
         data = in_data[:,0]
@@ -137,7 +146,7 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
     data_C80 = room.C80(data_filtered, fs)
     data_C50 = room.C50(data_filtered, fs)
 
-    acoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+    Cacoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
 
     print("Impulse Name: " + fname + ", Filter: " + filter_name + ", " + str(fc) + "Hz" )
     print("T10=", data_EDT/6)      # for Debug
@@ -152,7 +161,7 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
     print("C50=", data_C50)         # for Debug
     print("C80=", data_C80)         # for Debug
 
-    return  data_filtered, decaycurve, acoustic_param
+    return  data_filtered, decaycurve, Cacoustic_param
 
 
 '''
@@ -237,6 +246,7 @@ if __name__ == "__main__":
 class CAcousticParameter:
     def __init__(self, RT60, EDT, D50, C50, C80):
         self.RT60 = RT60
+
         self.EDT = EDT
         self.D50 = D50
         self.C50 = C50
