@@ -88,12 +88,20 @@ def ju_get_device_info(val_index, device_name):
 #     data = in_data 
 
 
-class CAudioDeviceInfo:
-    def __init__(self, index, name, hostApi, maxInputCh, maxOutputCh, fs):
-        self.index = index
-        self.name = name
-        self.hostApi = hostApi
-        self.maxInCh = maxInputCh
-        self.maxOutCh = maxOutputCh
-        self.fs = int(fs)
+# class CAudioDeviceInfo:
+#     def __init__(self, index, name, hostApi, maxInputCh, maxOutputCh, fs):
+#         self.index = index
+#         self.name = name
+#         self.hostApi = hostApi
+#         self.maxInCh = maxInputCh
+#         self.maxOutCh = maxOutputCh
+#         self.fs = int(fs)
 
+class CAudioDeviceInfo:
+    def __init__(self):
+        self.index = None
+        self.name = None
+        self.hostApi = None
+        self.maxInCh = None
+        self.maxOutCh = None
+        self.fs = None
