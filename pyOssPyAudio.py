@@ -98,10 +98,10 @@ def ju_get_device_info(val_index, device_name):
 #         self.fs = int(fs)
 
 class CAudioDeviceInfo:
-    def __init__(self):
-        self.index = None
-        self.name = None
-        self.hostApi = None
-        self.maxInCh = None
-        self.maxOutCh = None
-        self.fs = None
+    def __init__(self, dic_dev_info):
+        self.index = dic_dev_info['index']
+        self.name = dic_dev_info['name']
+        self.hostApi = dic_dev_info['hostApi']
+        self.maxInCh = dic_dev_info['maxInputChannels']
+        self.maxOutCh = dic_dev_info['maxOutputChannels']
+        self.fs = int(dic_dev_info['defaultSampleRate'])
