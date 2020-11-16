@@ -128,11 +128,11 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
         data_filtered = signal.fftconvolve(data, coef_fir1)
 
     # Plot Filtered Impulse Data
-    dbg.dPlotAudio(fs, data_filtered, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+    dbg.dPlotAudio(fs, data_filtered, title_txt=fname+' filtered '+str(fc)+'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt= "Amplitude")
 
     # Calculation Normalized Decay Curve
     decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))
-    dbg.dPlotAudio(fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+    dbg.dPlotDecay(fs, decaycurve, title_txt=fname + ' decay curve ' + str(fc) + 'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt="Amplitude")
 
     # Calculation Acoustic Parameters
     data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)
@@ -162,6 +162,104 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
     print("C80=", data_C80)         # for Debug
 
     return  data_filtered, decaycurve, Cacoustic_param
+
+
+def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
+    """ Impulse
+
+    Parameters
+    -----------
+        in_data: input data array
+        fs: sampling freq.
+        fc: Center Freq. of Band Pass Filter
+        filt_type: Filter Type
+                'butt': Butterworth IIR Filter using bandpass_filter function(default)
+                'fir': FIR Filter with Hamming window using scipy.signal.firwin & fftconvolve
+        order_tab:  On butterworth, filter's order (recommand order =< 4)
+                    On fir, FIR filter's tab size
+        RT60: Calculation real RT60 if set True (Not recommand)
+        fname: file name string of input data
+
+    Returns
+    ----------
+        data_filtered: Filtered data
+        decaycurve: Normalized Decay Curve from Filtered Data
+        acoustic_param: array RT60, EDT, D50, C50, C80
+    """
+    if in_data.ndim != 1:
+        data = in_data[:,0]
+        str_ch_name = "Left Channel"
+    else:
+        data = in_data
+        str_ch_name = "Mono"
+
+    time = data.shape[0] / fs
+
+    # Octave Band Pass Filter Range
+    band_f1, band_f2 = band_range(fc)
+
+    if filt_type == 'butt':
+        # Band Pass Filter Butterworth 2th order
+        filter_name = "Butterworth 2nd Order"
+        data_filtered = bandpass_filter(data, band_f1, band_f2, fs, order=order_tab)
+    elif filt_type == 'fir':
+        # Band Pass Filter FIR Hamming
+        filter_name = "FIR" + str(order_tab) + "tab Hamming"
+        firtab = order_tab
+        if band_f2 > 20000:
+            band_f2 = 20000
+        coef_fir1 = numpy.float32(signal.firwin(firtab, [band_f1, band_f2], pass_zero=False, fs=fs))
+        data_filtered = signal.fftconvolve(data, coef_fir1)
+
+    # Plot Filtered Impulse Data
+    if draw_plot:
+        dbg.dPlotAudio(fs, data_filtered, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+
+    # Calculation Normalized Decay Curve
+    decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))
+
+    # Plot DecayCurve
+    if draw_plot:
+        dbg.dPlotDecay( fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+
+
+    # Calculation Acoustic Parameters
+    data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)
+    data_t20, impulse_t20nonLin = room.T20(decaycurve, fs)
+    data_t30, impulse_t30nonLin, s_0dB, s_10dB, s_20dB, s_30dB, = room.T30_learning(decaycurve, fs)
+
+    if RT60 is True:        # 현재 사용하지 않음  False
+        data_t60, impulse_t60nonLin = room.RT60(decaycurve, fs)
+    else:
+        data_t60 = data_t30 * 2
+
+    data_D50 = room.D50(data_filtered, fs)
+    data_C80 = room.C80(data_filtered, fs)
+    data_C50 = room.C50(data_filtered, fs)
+
+    Cacoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+    Csample_param   = CsampledBParameter(s_0dB, s_10dB, s_20dB, s_30dB)
+
+    # for DEBUG
+    # print("Impulse Name: " + fname + ", Filter: " + filter_name + ", " + str(fc) + "Hz" )
+    # print("T10=", data_EDT/6)      # for Debug
+    # print("T20=", data_t20)          # for Debug
+    # print("T30=", data_t30)          # for Debug
+    # if RT60 is True:
+    #     print("RT60(Real)=", data_t60)          # for Debug
+    # else:
+    #     print("RT60(from T30*2)=", data_t60)    # for Debug
+    # print("EDT=", data_EDT)         # for Debug
+    # print("D50=", data_D50)         # for Debug
+    # print("C50=", data_C50)         # for Debug
+    # print("C80=", data_C80)         # for Debug
+
+    # print("Start   0dB=", Csample_param.s_0dB)
+    # print("Start -10dB=", Csample_param.s_10dB)
+    # print("Start -20dB=", Csample_param.s_20dB)
+    # print("Start -30dB=", Csample_param.s_30dB)
+
+    return  data_filtered, decaycurve, Cacoustic_param, Csample_param
 
 
 '''
@@ -251,3 +349,11 @@ class CAcousticParameter:
         self.D50 = D50
         self.C50 = C50
         self.C80 = C80
+
+class CsampledBParameter:
+    def __init__(self, s_0dB, s_10dB, s_20dB, s_30dB):
+        self.s_0dB = s_0dB
+        self.s_10dB = s_10dB
+        self.s_20dB = s_20dB
+        self.s_30dB = s_30dB
+
