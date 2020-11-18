@@ -42,7 +42,7 @@ def dPlotAudio(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt
 	plt.xlabel(xl_txt)
 	plt.ylabel(yl_txt)
 	plt.xlim(0, end_time)
-	plt.ylim(-1.0, 1.0)
+	plt.ylim(-1.0, 1.5)
 
 	plt.show()
 

@@ -57,10 +57,10 @@ dir_name = 'impulsefiles'
 wav_fname= wav_fname + str_fileinfo
 
 fname = pyOssWavfile.str_fname(dir_name, wav_fname) # 전체경로, 파일명 조합
-
 fmt_w, data_w, st_fmt_w, t_w = pyOssWavfile.readf32(fname)
 print(t_w)
 
+# 3초짜리 데이터로 만듬
 if t_w < 3.0:
     t_temp = 3.0 - t_w
     data = pyOssWavfile.insertSilence(data_w, st_fmt_w.fs, t_temp)
@@ -74,13 +74,17 @@ if t_w < 3.0:
 fc = 500        # Center freq for bandpass filter 500Hz
 
 data_filt, decay, a_param, c_param = pyOssFilter.calc_filt_impulse_learning(False, data, st_fmt_w.fs, fc, fname=wav_fname)
+print(a_param.__dict__)
 print(c_param.__dict__)
+
 
 ###############################################################################
 #
 ###############################################################################
-tgt_rt60 = 1.6      # sec
-sample_tgt_rt60 = st_fmt_w.fs
+tgt_rt60 = 1.6      # unit: sec
+sample_tgt_rt60 = c_param.s_0dB + int(st_fmt_w.fs * tgt_rt60)
+print(c_param.s_0dB, sample_tgt_rt60)
+
 
 k = 1
 draw_plot = False
@@ -111,7 +115,7 @@ if a_param.RT60[0][0] > tgt_rt60:
         data_filt, decay, a_param, c_param  = \
             learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
         '''
-
+        '''
         #case 2
         if p_10dB > p_0dB and p_30dB > 0:
             data_filt[0:p_10dB] = data_filt[0:p_10dB] * 0.9
@@ -130,7 +134,7 @@ if a_param.RT60[0][0] > tgt_rt60:
             #     pyOssFilter.calc_filt_impulse_learning(draw_plot, data_temp, st_fmt_w.fs, fc, filt_type='butt',fname=wav_fname)
             data_filt, decay, a_param, c_param  = \
                 learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
-
+        '''
         '''
         #case 3
         if p_10dB > p_0dB and p_30dB > 0:
@@ -151,6 +155,14 @@ if a_param.RT60[0][0] > tgt_rt60:
             data_w_filtered, decaycurve_w_filtered, acoustic_w_param, sample_w_dB_param  = \
                 pyOssFilter.calc_filt_impulse_learning(draw_plot, data_w, st_fmt_w.fs, fc, filt_type='butt',fname=wav_fname + str_fileinfo)
         '''
+        #case 4 (oss)
+        gain_slope_a = np.ones(p_0dB, dtype='f')
+        print( len(gain_slope_a) )
+        gain_slope_b = np.logspace( 1.0, 0.7, num=(data_filt.shape[0]-p_0dB) )
+        gain_slope = np.append( gain_slope_a, gain_slope_b )
+        data_temp = data_filt * gain_slope
+        data_filt, decay, a_param, c_param  = \
+            learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
 
         if a_param.RT60[0][0] == 0.0 or k > 1000:
             break
@@ -161,7 +173,6 @@ if a_param.RT60[0][0] > tgt_rt60:
             # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
         print (k, " : ",  a_param.RT60[0][0])
         print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-
 else:
     print("... < ", str(tgt_rt60))
     while a_param.RT60[0][0] < tgt_rt60:
@@ -188,7 +199,7 @@ else:
         data_filt, decay, a_param, c_param  = \
             learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
         '''
-
+        '''
         #case 2
         if p_10dB > p_0dB and p_30dB > 0:
             data_filt[0:p_10dB] = data_filt[0:p_10dB] * 1.0
@@ -207,10 +218,9 @@ else:
             #     pyOssFilter.calc_filt_impulse_learning(draw_plot, data_temp, st_fmt_w.fs, fc, filt_type='butt',fname=wav_fname + str_fileinfo)
             data_filt, decay, a_param, c_param  = \
                 learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
-
+        '''
         '''
         #case 3
-
         if p_10dB > p_0dB and p_30dB > 0:
             data_w_filtered[0:p_10dB] = data_w_filtered[0:p_10dB] * 1.1
 
@@ -230,6 +240,15 @@ else:
             data_w_filtered, decaycurve_w_filtered, acoustic_w_param, sample_w_dB_param  = \
                 pyOssFilter.calc_filt_impulse_learning(draw_plot, data_w, st_fmt_w.fs, fc, filt_type='butt',fname=wav_fname + str_fileinfo)
         '''
+
+        #case 4 
+        gain_slope_a = np.ones(p_0dB, dtype='f')
+        print( len(gain_slope_a) )
+        gain_slope_b = np.logspace( 1.0, 1.3, num=(data_filt.shape[0]-p_0dB), endpoint=False )
+        gain_slope = np.append( gain_slope_a, gain_slope_b )
+        data_temp = data_filt * gain_slope
+        data_filt, decay, a_param, c_param  = \
+            learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
 
         if a_param.RT60[0][0] == 0.0 or k > 1000:
             print("K IS ==== ", k)
@@ -252,6 +271,8 @@ print('2-4. sample_w_dB_param.s_0dB = ', c_param.s_0dB)
 print('2-5. sample_w_dB_param.s_10dB = ', c_param.s_10dB)
 print('2-6. sample_w_dB_param.s_20dB = ', c_param.s_20dB)
 print('2-7. sample_w_dB_param.s_30dB = ', c_param.s_30dB)
+
+dbg.dPlotAudio(st_fmt_w.fs, gain_slope)
 
 dbg.dPlotAudio( st_fmt_w.fs, data_filt, fname + ' filtered ' + str(fc) + 'Hz', label_txt='k='+str(k), xl_txt="Time(sec)", yl_txt="Amplitude" )
 dbg.dPlotDecay( st_fmt_w.fs, decay, fname + ' decay curve ' + str(fc) + 'Hz', label_txt='k='+str(k), xl_txt="Time(sec)", yl_txt="Amplitude" )
@@ -310,4 +331,3 @@ print(sname)
 pyOssWavfile.write(sname, st_fmt_aud.fs, data_convolve)
 print('* Save complete convolution data')
 '''
-
