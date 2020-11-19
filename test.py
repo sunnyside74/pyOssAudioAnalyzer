@@ -38,23 +38,23 @@ import pyOssLearn as learn
 str_fileinfo = '_mono_f32_44.1k'    # 파일명에 부가된 정보
 
 # IMPULSE WAVE FILE
-# wav_fname = "TyndallBruceMonument"
-# wav_fname = "ElvedenHallMarbleHall'"
-# wav_fname = "EmptyApartmentBedroom"
-# wav_fname = "FalklandPalaceRoyalTennisCourt"
-# wav_fname = "InsidePiano"
-# wav_fname = "MaesHowe"
-# wav_fname = "SportsCentreUniversityOfYork"
-# wav_fname = "StairwayUniversityOfYork"
-# wav_fname = "StAndrewsChurch"
-wav_fname = "mh3_000_ortf_48k"
-# wav_fname = "mh3_000_wx_48k"
-# wav_fname = "anechoic_gunshot_0.44.1kHz.f32"
-# wav_fname = "10s sweep for 3s reverb 48k"
+# wav_name = "TyndallBruceMonument"
+# wav_name = "ElvedenHallMarbleHall'"
+# wav_name = "EmptyApartmentBedroom"
+# wav_name = "FalklandPalaceRoyalTennisCourt"
+# wav_name = "InsidePiano"
+# wav_name = "MaesHowe"
+# wav_name = "SportsCentreUniversityOfYork"
+wav_name = "StairwayUniversityOfYork"
+# wav_name = "StAndrewsChurch"
+# wav_name = "mh3_000_ortf_48k"
+# wav_name = "mh3_000_wx_48k"
+# wav_name = "anechoic_gunshot_0.44.1kHz.f32"
+# wav_name = "10s sweep for 3s reverb 48k"
 
 dir_name = 'impulsefiles'
 
-wav_fname= wav_fname + str_fileinfo
+wav_fname= wav_name + str_fileinfo
 
 fname = pyOssWavfile.str_fname(dir_name, wav_fname) # 전체경로, 파일명 조합
 fmt_w, data_w, st_fmt_w, t_w = pyOssWavfile.readf32(fname)
@@ -66,6 +66,17 @@ if t_w < 3.0:
     data = pyOssWavfile.insertSilence(data_w, st_fmt_w.fs, t_temp)
     print(data.shape[0]/st_fmt_w.fs)
 
+###############################################################################
+# Audio Data Load
+###############################################################################
+# Load audio
+dir_audio = 'audiofiles'
+aud_name = "singing"
+aud_fname= aud_name + str_fileinfo
+
+audio_fname = pyOssWavfile.str_fname(dir_audio, aud_fname) # 전체경로, 파일명 조합
+fmt_a, data_a, st_fmt_a, t_a = pyOssWavfile.readf32(audio_fname)
+
 
 ###############################################################################
 # Filter
@@ -73,15 +84,24 @@ if t_w < 3.0:
 
 fc = 500        # Center freq for bandpass filter 500Hz
 
-data_filt, decay, a_param, c_param = pyOssFilter.calc_filt_impulse_learning(False, data, st_fmt_w.fs, fc, fname=wav_fname)
+data_filt, decay, a_param, c_param = pyOssFilter.calc_filt_impulse_learning(False, data_w, st_fmt_w.fs, fc, fname=wav_fname)
 print(a_param.__dict__)
 print(c_param.__dict__)
+
+# Convolution
+data_convolve_ori = sig.fftconvolve(data_a, data_filt)
+
+# Save Wav File
+sname_ori = pyOssWavfile.str_fname('', aud_name + '_ori_' + wav_name + str_fileinfo)
+print(sname_ori)
+pyOssWavfile.write(sname_ori, st_fmt_w.fs, data_convolve_ori)
+print('* Save complete convolution data original')
 
 
 ###############################################################################
 #
 ###############################################################################
-tgt_rt60 = 1.6      # unit: sec
+tgt_rt60 = 2.5      # unit: sec
 sample_tgt_rt60 = c_param.s_0dB + int(st_fmt_w.fs * tgt_rt60)
 print(c_param.s_0dB, sample_tgt_rt60)
 
@@ -158,7 +178,8 @@ if a_param.RT60[0][0] > tgt_rt60:
         #case 4 (oss)
         gain_slope_a = np.ones(p_0dB, dtype='f')
         print( len(gain_slope_a) )
-        gain_slope_b = np.logspace( 1.0, 0.7, num=(data_filt.shape[0]-p_0dB) )
+        # gain_slope_b = np.linspace( 1.0, 0.7, num=(data_filt.shape[0]-p_0dB) )
+        gain_slope_b = np.logspace( 0, -0.1, num=(data_filt.shape[0]-p_0dB) )
         gain_slope = np.append( gain_slope_a, gain_slope_b )
         data_temp = data_filt * gain_slope
         data_filt, decay, a_param, c_param  = \
@@ -243,8 +264,8 @@ else:
 
         #case 4 
         gain_slope_a = np.ones(p_0dB, dtype='f')
-        print( len(gain_slope_a) )
-        gain_slope_b = np.logspace( 1.0, 1.3, num=(data_filt.shape[0]-p_0dB), endpoint=False )
+        # gain_slope_b = np.linspace( 1.0, 1.3, num=(data_filt.shape[0]-p_0dB) )
+        gain_slope_b = np.logspace( 0, 0.1, num=(data_filt.shape[0]-p_0dB) )
         gain_slope = np.append( gain_slope_a, gain_slope_b )
         data_temp = data_filt * gain_slope
         data_filt, decay, a_param, c_param  = \
@@ -276,6 +297,15 @@ dbg.dPlotAudio(st_fmt_w.fs, gain_slope)
 
 dbg.dPlotAudio( st_fmt_w.fs, data_filt, fname + ' filtered ' + str(fc) + 'Hz', label_txt='k='+str(k), xl_txt="Time(sec)", yl_txt="Amplitude" )
 dbg.dPlotDecay( st_fmt_w.fs, decay, fname + ' decay curve ' + str(fc) + 'Hz', label_txt='k='+str(k), xl_txt="Time(sec)", yl_txt="Amplitude" )
+
+# Convolution
+data_convolve_trans = sig.fftconvolve(data_a, data_filt)
+
+# Save Wav File
+sname_trans = pyOssWavfile.str_fname('', aud_name + '_trans_' + wav_name + str_fileinfo)
+print(sname_trans)
+pyOssWavfile.write(sname_trans, st_fmt_w.fs, data_convolve_trans)
+print('* Save complete convolution data trans')
 
 
 '''

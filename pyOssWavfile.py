@@ -1032,10 +1032,15 @@ def insertSilence(data, fs, ins_time):
     """
     ins_data_length = ins_time * fs
 
+    last_value = data[data.shape[0]-1]
+
     if (data.ndim > 1) :
-        silence_data = numpy.zeros(numpy.int32(ins_data_length), data.ndim)
+        # silence_data = numpy.zeros(numpy.int32(ins_data_length), data.ndim)
+        silence_data = numpy.full(numpy.int32(ins_data_length), last_value, data.ndim)
     else:
-        silence_data = numpy.zeros(numpy.int32(ins_data_length))
+        # silence_data = numpy.zeros(numpy.int32(ins_data_length))
+        silence_data = numpy.full(numpy.int32(ins_data_length), last_value)
+
 
     append_data = numpy.append(data, silence_data)
 
