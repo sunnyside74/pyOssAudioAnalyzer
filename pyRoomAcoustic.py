@@ -30,7 +30,7 @@ def T30(decayCurveNorm, fs):
 
     :param decayCurveNorm: is the normalized decay curve
     :param fs: sample rate
-    :return: T30
+    :return: T30 (is )
     """
 
     #T, nonLin = _reverberation(decayCurveNorm, -5, -35, fs)

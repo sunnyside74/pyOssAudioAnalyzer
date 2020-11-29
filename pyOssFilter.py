@@ -87,7 +87,7 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
     -----------
         in_data: input data array
         fs: sampling freq.
-        fc: Center Freq. of Band Pass Filter
+        fc: Center Freq. of Band Pass Filter. if fc = 0, no filter process
         filt_type: Filter Type
                 'butt': Butterworth IIR Filter using bandpass_filter function(default)
                 'fir': FIR Filter with Hamming window using scipy.signal.firwin & fftconvolve 
@@ -111,21 +111,25 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
 
     time = data.shape[0] / fs
 
-    # Octave Band Pass Filter Range 
-    band_f1, band_f2 = band_range(fc)
+    if fc != 0:
+        # Octave Band Pass Filter Range 
+        band_f1, band_f2 = band_range(fc)
 
-    if filt_type == 'butt':
-        # Band Pass Filter Butterworth 2th order
-        filter_name = "Butterworth 2nd Order" 
-        data_filtered = bandpass_filter(data, band_f1, band_f2, fs, order=order_tab)
-    elif filt_type == 'fir': 
-        # Band Pass Filter FIR Hamming
-        filter_name = "FIR" + str(order_tab) + "tab Hamming"
-        firtab = order_tab
-        if band_f2 > 20000:
-            band_f2 = 20000
-        coef_fir1 = numpy.float32(signal.firwin(firtab, [band_f1, band_f2], pass_zero=False, fs=fs))
-        data_filtered = signal.fftconvolve(data, coef_fir1)
+        if filt_type == 'butt':
+            # Band Pass Filter Butterworth 2th order
+            filter_name = "Butterworth 2nd Order" 
+            data_filtered = bandpass_filter(data, band_f1, band_f2, fs, order=order_tab)
+        elif filt_type == 'fir': 
+            # Band Pass Filter FIR Hamming
+            filter_name = "FIR" + str(order_tab) + "tab Hamming"
+            firtab = order_tab
+            if band_f2 > 20000:
+                band_f2 = 20000
+            coef_fir1 = numpy.float32(signal.firwin(firtab, [band_f1, band_f2], pass_zero=False, fs=fs))
+            data_filtered = signal.fftconvolve(data, coef_fir1)
+    else:
+        data_filtered = data
+        filter_name = "No Filter"
 
     # Plot Filtered Impulse Data
     dbg.dPlotAudio(fs, data_filtered, title_txt=fname+' filtered '+str(fc)+'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt= "Amplitude")
@@ -149,17 +153,17 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
     Cacoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
 
     print("Impulse Name: " + fname + ", Filter: " + filter_name + ", " + str(fc) + "Hz" )
-    print("T10=", data_EDT/6)      # for Debug
-    print("T20=", data_t20)          # for Debug
-    print("T30=", data_t30)          # for Debug
+    print(" T10=", data_EDT/6)      # for Debug
+    print(" T20=", data_t20)          # for Debug
+    print(" T30=", data_t30)          # for Debug
     if RT60 is True:
         print("RT60(Real)=", data_t60)            # for Debug
     else:
         print("RT60(from T30*2)=", data_t60)            # for Debug
-    print("EDT=", data_EDT)            # for Debug
-    print("D50=", data_D50)         # for Debug
-    print("C50=", data_C50)         # for Debug
-    print("C80=", data_C80)         # for Debug
+    print(" EDT=", data_EDT)            # for Debug
+    print(" D50=", data_D50)         # for Debug
+    print(" C50=", data_C50)         # for Debug
+    print(" C80=", data_C80)         # for Debug
 
     return  data_filtered, decaycurve, Cacoustic_param
 
@@ -171,7 +175,7 @@ def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', ord
     -----------
         in_data: input data array
         fs: sampling freq.
-        fc: Center Freq. of Band Pass Filter
+        fc: Center Freq. of Band Pass Filter. if fc = 0, no filter process
         filt_type: Filter Type
                 'butt': Butterworth IIR Filter using bandpass_filter function(default)
                 'fir': FIR Filter with Hamming window using scipy.signal.firwin & fftconvolve
@@ -195,21 +199,26 @@ def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', ord
 
     time = data.shape[0] / fs
 
-    # Octave Band Pass Filter Range
-    band_f1, band_f2 = band_range(fc)
+    if fc != 0:
+        # Octave Band Pass Filter Range
+        band_f1, band_f2 = band_range(fc)
 
-    if filt_type == 'butt':
-        # Band Pass Filter Butterworth 2th order
-        filter_name = "Butterworth 2nd Order"
-        data_filtered = bandpass_filter(data, band_f1, band_f2, fs, order=order_tab)
-    elif filt_type == 'fir':
-        # Band Pass Filter FIR Hamming
-        filter_name = "FIR" + str(order_tab) + "tab Hamming"
-        firtab = order_tab
-        if band_f2 > 20000:
-            band_f2 = 20000
-        coef_fir1 = numpy.float32(signal.firwin(firtab, [band_f1, band_f2], pass_zero=False, fs=fs))
-        data_filtered = signal.fftconvolve(data, coef_fir1)
+        if filt_type == 'butt':
+            # Band Pass Filter Butterworth 2th order
+            filter_name = "Butterworth 2nd Order"
+            data_filtered = bandpass_filter(data, band_f1, band_f2, fs, order=order_tab)
+        elif filt_type == 'fir':
+            # Band Pass Filter FIR Hamming
+            filter_name = "FIR" + str(order_tab) + "tab Hamming"
+            firtab = order_tab
+            if band_f2 > 20000:
+                band_f2 = 20000
+            coef_fir1 = numpy.float32(signal.firwin(firtab, [band_f1, band_f2], pass_zero=False, fs=fs))
+            data_filtered = signal.fftconvolve(data, coef_fir1)
+    else:
+        data_filtered = data
+        filter_name = "No Filter"
+
 
     # Plot Filtered Impulse Data
     if draw_plot:
