@@ -157,9 +157,9 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
     print(" T20=", data_t20)          # for Debug
     print(" T30=", data_t30)          # for Debug
     if RT60 is True:
-        print("RT60(Real)=", data_t60)            # for Debug
+        print(" RT60(Real)=", data_t60)            # for Debug
     else:
-        print("RT60(from T30*2)=", data_t60)            # for Debug
+        print(" RT60(from T30*2)=", data_t60)            # for Debug
     print(" EDT=", data_EDT)            # for Debug
     print(" D50=", data_D50)         # for Debug
     print(" C50=", data_C50)         # for Debug

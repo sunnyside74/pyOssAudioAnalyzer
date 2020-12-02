@@ -21,7 +21,7 @@ def T20(decayCurveNorm, fs):
     """
     #T, nonLin = _reverberation(decayCurveNorm, -5, -25, fs)
     T, nonLin = _reverberation(decayCurveNorm, fs, -5, -25)
-    T20 = T
+    T20 = T * 3
     return T20, nonLin
 
 
@@ -35,7 +35,7 @@ def T30(decayCurveNorm, fs):
 
     #T, nonLin = _reverberation(decayCurveNorm, -5, -35, fs)
     T, nonLin = _reverberation(decayCurveNorm, fs, -5, -35)
-    T30 = T
+    T30 = T * 2
     return T30, nonLin
 
 
@@ -194,7 +194,7 @@ def _reverberation(decayCurveNorm, fs, reqDBStart=-5, reqDBEnd=-35):
     :param decayCurveNorm: normalized decay curve
     :param fs: sample rate
     :param reqDBStart: start level for reverberation (is -5 for T60 and 0 for EDT)
-    :param reqDBEnd: end level for reverberation (default: RT30 (-5 ~ -35dB)) (is -65 for RT60)
+    :param reqDBEnd: end level for reverberation (default: T30 (-5 ~ -35dB)) (is -65 for RT60)
     :return: reveration
     """
 
@@ -403,4 +403,44 @@ def _definition(IR, fs, t=50):
     if D.ndim == 1:
         D = D[:, np.newaxis]
     return D
+
+
+def soundspeed(c_degree=20):
+    """ 섭씨 온도를 입력하면 해당온도의 음속 값을 계산함
+    :param c_degree: 섭씨 온도
+    :return c: 음속 sound speed  
+    """
+    c_degree = 20               # Temperature of air (Celsius) 
+    c = 331.5 + 0.606*c_degree  # speed of Sound (at 1000 hPa)
+    return c
+
+def rt60_sabine(width, depth, height, c_deg=20, w_absl=0.2):
+    """ sabine reverberation time
+    :param x: 실내공간의 가로길이(m) room size of width(m)
+    :param y: 실내공간의 세로길이(m) room size of depth(m) 
+    :param z: 실내공간의 높이(m) room size of height(m)
+    :param c: 실내공간의 섭씨온도 temperatures of room for sound speed (default = 20)
+    :param w_absl: 벽면의 흡음률 absolution value of wall (0.0 ~ 1.0)
+    :return rt_sabine: rt60 of sabine's equation  
+    :return V: 실내공간의 체적(m^3) Room's Volume  
+    :return S: 실내공간의 표면적(m^2) Room's   
+    :return K: 온도 상수 temperature constant of sabine's equation  
+    :return A: 실내의 흡음력 Room's absolutions 
+    """
+    c = soundspeed(c_deg)
+    V = width * depth * height                                              # W x D x H (m) 실내공간의 체적     
+    S = (width * height * 2) + (width * depth * 2) + (depth * height * 2)   # 실내공간의 표면적
+    K = 24 * np.log(10) / c
+    A = S * w_absl
+    rt_sabine = K * V / A
+
+    return rt_sabine, V, S, K, A
+
+
+def _norm_gain_dbfs(sig, fs):
+    """signal로부터 gain값을 
+
+    :param sig: audio data
+    :param fs: sample rate
+    """
 

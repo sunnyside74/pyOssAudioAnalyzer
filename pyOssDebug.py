@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 
 # Import User Library
 import pyOssWavfile
+import pyRoomAcoustic as room
 
 #%matplotlib tk
 
@@ -126,6 +127,35 @@ def dWavInfo(fname):
 	print("Bits per Sample =", struct_fmt.bitdepth)
 	# print("Time =", time, "sec")
 	# print("Length = ", data.shape[0])
+
+
+def dAParam( data, decayCurveNorm, fs, RT60 = False, fname='' ):
+	# Calculation Acoustic Parameters
+	data_EDT, impulse_EDTnonLin = room.EDT(decayCurveNorm, fs)
+	data_t20, impulse_t20nonLin = room.T20(decayCurveNorm, fs)
+	data_t30, impulse_t30nonLin = room.T30(decayCurveNorm, fs)
+	if RT60 is True:
+		data_t60, impulse_t60nonLin = room.RT60(decayCurveNorm, fs) 
+	else:
+		data_t60 = data_t30
+	data_D50 = room.D50(data, fs)
+	data_C80 = room.C80(data, fs)
+	data_C50 = room.C50(data, fs)
+
+	print( "Impulse Name: ", fname)
+	print( " - Decay Time  0 ~ -10dB =", data_EDT/6)	# for Debug
+	print( " - Decay Time -5 ~ -25dB =", data_t20/3)	# for Debug
+	print( " - Decay Time -5 ~ -35dB =", data_t30/2)	# for Debug
+	print( " - EDT=", data_EDT)         				# for Debug
+	print( " - T20=", data_t20)         				# for Debug
+	print( " - T30=", data_t30)         				# for Debug
+	if RT60 is True:
+		print( " - RT60(Real)=", data_t60)				# for Debug
+	else:
+		print( " - RT60(from T30)=", data_t60) 			# for Debug
+	print( " - D50=", data_D50)         				# for Debug
+	print( " - C50=", data_C50)         				# for Debug
+	print( " - C80=", data_C80)         				# for Debug
 
 
 
