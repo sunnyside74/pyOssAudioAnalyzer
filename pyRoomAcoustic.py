@@ -404,10 +404,65 @@ def _definition(IR, fs, t=50):
         D = D[:, np.newaxis]
     return D
 
+def calcAcousticParam( data, decayCurveNorm, fs, RT60 = False, printout=False, label_text='' ):
+	"""	Calculation Acoustic Parameter Values & Print out
+
+	Parameters
+	----------
+    :param data: audio data array
+    :param decayCurveNorm: Normalized decay curve data
+    :param fs: sampling rate of the audio data
+    :param RT60(option): Calculate real rt60 (True of False(=default))
+    :param printout(option): Print All Acoustic Parameter 
+	:param fname: wave file path & name or struct_format_chunk
+	
+	Returns
+	--------
+	:param CAcousticParam: structure of Acoustic Parameters
+	"""
+	# Calculation Acoustic Parameters
+	data_EDT, nonLin_EDT = EDT(decayCurveNorm, fs)
+	data_t20, nonLin_t20 = T20(decayCurveNorm, fs)
+	data_t30, nonLin_t30 = T30(decayCurveNorm, fs)
+	if RT60 is True:
+		data_t60, nonLin_t60 = RT60(decayCurveNorm, fs) 
+	else:
+		data_t60 = data_t30
+	data_D50 = D50(data, fs)
+	data_C80 = C80(data, fs)
+	data_C50 = C50(data, fs)
+
+	if printout is True:
+		print( "Label: ", label_text)
+		print( " - Decay Time  0 ~ -10dB = ", data_EDT[0][0]/6)	# for Debug
+		print( " - Decay Time -5 ~ -25dB = ", data_t20[0][0]/3)	# for Debug
+		print( " - Decay Time -5 ~ -35dB = ", data_t30[0][0]/2)	# for Debug
+		print( " - EDT = ", data_EDT[0][0])						# for Debug
+		print( " - T20 = ", data_t20[0][0])         			# for Debug
+		print( " - T30 = ", data_t30[0][0])         			# for Debug
+		if RT60 is True:
+			print( " - RT60(Real) = ", data_t60[0][0])			# for Debug
+		else:
+			print( " - RT60(=T30) = ", data_t60[0][0]) 			# for Debug
+		print( " - D50 = ", data_D50)         			# for Debug
+		print( " - C50 = ", data_C50)         			# for Debug
+		print( " - C80 = ", data_C80)         			# for Debug
+
+	CAcousticParam = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+	return CAcousticParam
+
+
 
 def soundspeed(c_degree=20):
     """ 섭씨 온도를 입력하면 해당온도의 음속 값을 계산함
+    ----------
+    Parameters
+    ----------
     :param c_degree: 섭씨 온도
+
+    ----------
+    Returns
+    ----------
     :return c: 음속 sound speed  
     """
     c_degree = 20               # Temperature of air (Celsius) 
@@ -416,11 +471,17 @@ def soundspeed(c_degree=20):
 
 def rt60_sabine(width, depth, height, c_deg=20, w_absl=0.2):
     """ sabine reverberation time
+    ----------
+    Parameters
+    ----------
     :param x: 실내공간의 가로길이(m) room size of width(m)
     :param y: 실내공간의 세로길이(m) room size of depth(m) 
     :param z: 실내공간의 높이(m) room size of height(m)
     :param c: 실내공간의 섭씨온도 temperatures of room for sound speed (default = 20)
-    :param w_absl: 벽면의 흡음률 absolution value of wall (0.0 ~ 1.0)
+    :param w_absl: 벽면의 흡음률 absolution value of wall (0.0 ~ 1.0) default: 0.2
+    ----------
+    Returns
+    ----------
     :return rt_sabine: rt60 of sabine's equation  
     :return V: 실내공간의 체적(m^3) Room's Volume  
     :return S: 실내공간의 표면적(m^2) Room's   
@@ -437,10 +498,11 @@ def rt60_sabine(width, depth, height, c_deg=20, w_absl=0.2):
     return rt_sabine, V, S, K, A
 
 
-def _norm_gain_dbfs(sig, fs):
-    """signal로부터 gain값을 
+class CAcousticParameter:
+    def __init__(self, RT60, EDT, D50, C50, C80):
+        self.RT60 = RT60
 
-    :param sig: audio data
-    :param fs: sample rate
-    """
-
+        self.EDT = EDT
+        self.D50 = D50
+        self.C50 = C50
+        self.C80 = C80

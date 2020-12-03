@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 # User Libraries
 import pyRoomAcoustic as room       # room acoustic parameter
 import pyOssDebug as dbg            # for debug
+import pyroomacoustics as pyroom    # room acoustic
 
 
 def band_range(fc, octave=0):
@@ -80,7 +81,7 @@ def bandpass_filter(data, lowcut, highcut, fs, order=5):
 
 
 
-def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
+def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, plot=False, fname="Please set file name"):
     """ Impulse 
 
     Parameters
@@ -131,41 +132,18 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
         data_filtered = data
         filter_name = "No Filter"
 
-    # Plot Filtered Impulse Data
-    dbg.dPlotAudio(fs, data_filtered, title_txt=fname+' filtered '+str(fc)+'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt= "Amplitude")
-
     # Calculation Normalized Decay Curve
     decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))
-    dbg.dPlotDecay(fs, decaycurve, title_txt=fname + ' decay curve ' + str(fc) + 'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt="Amplitude")
 
     # Calculation Acoustic Parameters
-    data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)
-    data_t20, impulse_t20nonLin = room.T20(decaycurve, fs)
-    data_t30, impulse_t30nonLin = room.T30(decaycurve, fs)
-    if RT60 is True:
-        data_t60, impulse_t60nonLin = room.RT60(decaycurve, fs) 
-    else:
-        data_t60 = data_t30 * 2
-    data_D50 = room.D50(data_filtered, fs)
-    data_C80 = room.C80(data_filtered, fs)
-    data_C50 = room.C50(data_filtered, fs)
+    st_acoustic_param = room.calcAcousticParam(data_filtered, decaycurve, fs, printout=plot, label_text="Acoustics Parameter of "+fname+", "+filter_name+","+str(fc)+"Hz")
 
-    Cacoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+    if plot is True:
+        # Plot Filtered Impulse Data
+        dbg.dPlotAudio(fs, data_filtered, title_txt=fname+' filtered '+str(fc)+'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt= "Amplitude")
+        dbg.dPlotDecay(fs, decaycurve, title_txt=fname + ' decay curve ' + str(fc) + 'Hz', label_txt=str_ch_name, xl_txt="Time(sec)", yl_txt="Amplitude")
 
-    print("Impulse Name: " + fname + ", Filter: " + filter_name + ", " + str(fc) + "Hz" )
-    print(" T10=", data_EDT/6)      # for Debug
-    print(" T20=", data_t20)          # for Debug
-    print(" T30=", data_t30)          # for Debug
-    if RT60 is True:
-        print(" RT60(Real)=", data_t60)            # for Debug
-    else:
-        print(" RT60(from T30*2)=", data_t60)            # for Debug
-    print(" EDT=", data_EDT)            # for Debug
-    print(" D50=", data_D50)         # for Debug
-    print(" C50=", data_C50)         # for Debug
-    print(" C80=", data_C80)         # for Debug
-
-    return  data_filtered, decaycurve, Cacoustic_param
+    return  data_filtered, decaycurve, st_acoustic_param
 
 
 def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
@@ -246,7 +224,7 @@ def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', ord
     data_C80 = room.C80(data_filtered, fs)
     data_C50 = room.C50(data_filtered, fs)
 
-    Cacoustic_param = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+    Cacoustic_param = room.CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
     Csample_param   = CsampledBParameter(s_0dB, s_10dB, s_20dB, s_30dB)
 
     # for DEBUG
@@ -350,14 +328,6 @@ if __name__ == "__main__":
     plt.show()
     '''
 
-class CAcousticParameter:
-    def __init__(self, RT60, EDT, D50, C50, C80):
-        self.RT60 = RT60
-
-        self.EDT = EDT
-        self.D50 = D50
-        self.C50 = C50
-        self.C80 = C80
 
 class CsampledBParameter:
     def __init__(self, s_0dB, s_10dB, s_20dB, s_30dB):

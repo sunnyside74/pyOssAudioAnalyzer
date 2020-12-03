@@ -953,7 +953,7 @@ def str_fname(path_name, wav_name, ext='wav'):
     return fullname
 
 
-def readf32(filename, mmap=False):
+def readf32(filename, samplerate=44100, mmap=False):
     """ 
     .wav file read as type float32 & mono & 44100Hz any format 
     use pyOssWavfile.read() or soundfile.read()
@@ -962,12 +962,13 @@ def readf32(filename, mmap=False):
     Parameters
     ----------
     filename: .wav file's full name(path+filename)
+    samplerate: Convert audio sample rate
     mmap=False: read() function's parameter for memcopy
 
     Returns
     -------
     fmt_chunk: wave file header subchunk1 data
-    data: Audio Data Array float32 (-1.0 ~ 1.0 ), Mono, 44100Hz
+    data: Audio Data Array float32 (-1.0 ~ 1.0 ), Mono, samplerate
     length: 
     struct_fmt: extract header information structure
     time: time of audio
@@ -1001,14 +1002,14 @@ def readf32(filename, mmap=False):
         struct_fmt.format = 3
         struct_fmt.bitdepth = 32
 
-    # Sampling rate Convert to 44100 Hz use librosa resampling
-    if struct_fmt.fs != 44100:
-        temp_data = librosa.resample(temp_data, struct_fmt.fs, 44100)
-        struct_fmt.fs = 44100
+    # Sampling rate Convert to samplerate freq. use librosa resampling
+    if struct_fmt.fs != samplerate:
+        temp_data = librosa.resample(temp_data, struct_fmt.fs, samplerate)
+        struct_fmt.fs = samplerate
 
     # Format Chunk Update 
         
-    data = temp_data    
+    data = temp_data
 
     time = data.shape[0] / struct_fmt.fs
 
