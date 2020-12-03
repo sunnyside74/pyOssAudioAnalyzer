@@ -81,7 +81,7 @@ def bandpass_filter(data, lowcut, highcut, fs, order=5):
 
 
 
-def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, plot=False, fname="Please set file name"):
+def calc_filt_impulse(in_data, fs, fc, estimate_rt, filt_type='butt', order_tab=2, RT60=False, plot=False, fname="Please set file name"):
     """ Impulse 
 
     Parameters
@@ -110,8 +110,8 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
         data = in_data
         str_ch_name = "Mono"
 
-    time = data.shape[0] / fs
-
+    # time = data.shape[0] / fs
+    
     if fc != 0:
         # Octave Band Pass Filter Range 
         band_f1, band_f2 = band_range(fc)
@@ -133,7 +133,7 @@ def calc_filt_impulse(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False
         filter_name = "No Filter"
 
     # Calculation Normalized Decay Curve
-    decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))
+    decaycurve = numpy.float32(room.decayCurve(data_filtered, estimate_rt, fs))
 
     # Calculation Acoustic Parameters
     st_acoustic_param = room.calcAcousticParam(data_filtered, decaycurve, fs, printout=plot, label_text="Acoustics Parameter of "+fname+", "+filter_name+","+str(fc)+"Hz")
