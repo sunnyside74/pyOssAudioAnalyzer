@@ -428,9 +428,9 @@ def calcAcousticParam( data, decayCurveNorm, fs, RT60 = False, printout=False, l
 		data_t60, nonLin_t60 = RT60(decayCurveNorm, fs) 
 	else:
 		data_t60 = data_t30
-	data_D50 = D50(data, fs)
-	data_C80 = C80(data, fs)
 	data_C50 = C50(data, fs)
+	data_C80 = C80(data, fs)
+	data_D50 = D50(data, fs)
 
 	if printout is True:
 		print( "Label: ", label_text)
@@ -444,13 +444,12 @@ def calcAcousticParam( data, decayCurveNorm, fs, RT60 = False, printout=False, l
 			print( " - RT60(Real) = ", data_t60[0][0])			# for Debug
 		else:
 			print( " - RT60(=T30) = ", data_t60[0][0]) 			# for Debug
-		print( " - D50 = ", data_D50)         			# for Debug
 		print( " - C50 = ", data_C50)         			# for Debug
 		print( " - C80 = ", data_C80)         			# for Debug
+		print( " - D50 = ", data_D50)         			# for Debug
 
 	CAcousticParam = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
 	return CAcousticParam
-
 
 
 def soundspeed(c_degree=20):
@@ -468,6 +467,7 @@ def soundspeed(c_degree=20):
     c_degree = 20               # Temperature of air (Celsius) 
     c = 331.5 + 0.606*c_degree  # speed of Sound (at 1000 hPa)
     return c
+
 
 def rt60_sabine(width, depth, height, c_deg=20, w_absl=0.2):
     """ sabine reverberation time
