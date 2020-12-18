@@ -17,7 +17,7 @@ import pyRoomAcoustic as room
 
 #%matplotlib tk
 
-def dPlotAudio(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y"):
+def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y"):
 	"""
     plot audio array using matplot for debug
 
@@ -43,7 +43,7 @@ def dPlotAudio(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt
 	plt.xlabel(xl_txt)
 	plt.ylabel(yl_txt)
 	plt.xlim(0, end_time)
-	plt.ylim(-1.0, 1.0)
+	plt.ylim(-y_range, y_range)
 
 	plt.show()
 
