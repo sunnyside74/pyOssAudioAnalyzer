@@ -35,7 +35,7 @@ import pyOssLearn as learn
 #  Impulse Data Load & -------------------------------------------------------#
 #############################################################################
 
-str_fileinfo = '_mono_f32_44.1k'    # 파일명에 부가된 정보
+str_fileinfo = '_mono_32f_44.1k'    # 파일명에 부가된 정보
 
 # IMPULSE WAVE FILE
 # wav_name = "TyndallBruceMonument"
@@ -317,7 +317,7 @@ print('* Save complete convolution data trans')
 
 # Audio File Load
 dir_audio = 'anechoic_sample'
-str_info = '_mono_f32_44.1k'
+str_info = '_mono_32f_44.1k'
 
 aud_name = 'singing'
 aud_name_temp = 'singing' + str_info

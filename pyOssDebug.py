@@ -118,14 +118,14 @@ def dWavInfo(fname):
 	else:
 		str_format = struct_fmt.format
 
-	print("Audio Format =", str_format)
-	print("Number of Channel =", struct_fmt.ch)
-	print("Sampling Frequency =", struct_fmt.fs)
-	# print("Byte Rate =", struct_fmt.byterate)       # 일종의 Checksum 
-	# print("Block Align =", struct_fmt.blockalign)
-	print("Bits per Sample =", struct_fmt.bitdepth)
-	# print("Time =", time, "sec")
-	# print("Length = ", data.shape[0])
+	print(" - Audio Format =", str_format)
+	print(" - Number of Channel =", struct_fmt.ch)
+	print(" - Sampling Frequency =", struct_fmt.fs)
+	# print(" - Byte Rate =", struct_fmt.byterate)       # 일종의 Checksum 
+	# print(" - Block Align =", struct_fmt.blockalign)
+	print(" - Bits per Sample =", struct_fmt.bitdepth)
+	# print(" - Time =", time, "sec")
+	# print(" - Length = ", data.shape[0])
 
 
 def dPrintAParam(CAcousticParam):

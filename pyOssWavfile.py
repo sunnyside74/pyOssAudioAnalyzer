@@ -27,7 +27,7 @@ __all__ = [
     'read',
     'write',
     'extractWavFmtChunk'
-    'srt_fname'
+    'str_fname'
 ]
 
 
@@ -1090,6 +1090,61 @@ def save_oss_npz(fname, data, struct_fmt, t):
     """
     fmt_array = [struct_fmt.format, struct_fmt.ch, struct_fmt.fs, struct_fmt.bitdepth, t]
     numpy.savez(fname, info = fmt_array, data=data)
+
+
+def str_file_info(fmt):
+    """
+    Parameters
+    ----------
+    : fmt: structure of file format
+    Retrun
+    ------
+    :str_info_txt
+
+    """
+    # Number of Channels
+    if (fmt.ch == 1):
+        str_ch = 'mono'
+    elif (fmt.ch == 2):
+        str_ch = 'stereo'
+    elif (fmt.ch == 6):
+        str_ch = '5_1'
+    elif (fmt.ch == 8):
+        str_ch = '7_1'
+    else:
+        str_ch = 'Unknown'
+
+    # Format
+    if (fmt.format == 1):
+        str_format = 'i'
+    elif (fmt.format == 3):
+        str_format = 'f'
+    else:
+        str_format = 'Unknown'
+
+    # Bit Depth
+    if (fmt.bitdepth == 16):
+        str_bit = '16'
+    elif (fmt.bitdepth == 24):
+        str_bit = '24'
+    elif (fmt.bitdepth == 32):
+        str_bit = '32'
+    else:
+        str_bit = 'Unknown'
+
+    # Sampling Rate
+    if (fmt.fs == 44100):
+        str_fs = '44.1k'
+    elif (fmt.fs == 48000):
+        str_fs = '48k'
+    elif (fmt.fs == 96000):
+        str_fs = '96k'
+    else:
+        str_fs = 'Unknown'
+
+    str_info_txt = '.' + str_ch + '.' + str_bit + str_format + '.' + str_fs
+
+    return str_info_txt
 
 
 
