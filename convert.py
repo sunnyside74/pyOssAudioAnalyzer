@@ -37,10 +37,9 @@ import pyOssLearn as learn
 # 임펄스 음원
 ####################################
 # imp_dir = 'impulsefiles'       # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (OpenAir 다운로드)
-imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
+# imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
 
-# imp_name = "TyndallBruceMonument"
-# imp_name = "ElvedenHallMarbleHall'"
+# imp_name = "ElvedenHallMarbleHall"
 # imp_name = "EmptyApartmentBedroom"
 # imp_name = "FalklandPalaceRoyalTennisCourt"
 # imp_name = "InsidePiano"
@@ -48,7 +47,8 @@ imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 
 # imp_name = "SportsCentreUniversityOfYork"
 # imp_name = "StairwayUniversityOfYork"
 # imp_name = "StAndrewsChurch"
-# imp_namee = "mh3_000_ortf_48k"
+# imp_name = "mh3_000_ortf_48k"
+# imp_name = "TyndallBruceMonument"
 
 # imp_name = '경기국악당 IR-01'
 # imp_name = '국립국악원 우면당 IR-01'
