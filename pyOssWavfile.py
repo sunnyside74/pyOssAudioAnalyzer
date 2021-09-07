@@ -1112,7 +1112,7 @@ def str_file_info(fmt):
     elif (fmt.ch == 8):
         str_ch = '7_1'
     else:
-        str_ch = 'Unknown'
+        str_ch = 'Unknown_ch'
 
     # Format
     if (fmt.format == 1):
@@ -1120,7 +1120,7 @@ def str_file_info(fmt):
     elif (fmt.format == 3):
         str_format = 'f'
     else:
-        str_format = 'Unknown'
+        str_format = 'Unknown_fmt'
 
     # Bit Depth
     if (fmt.bitdepth == 16):
@@ -1130,7 +1130,7 @@ def str_file_info(fmt):
     elif (fmt.bitdepth == 32):
         str_bit = '32'
     else:
-        str_bit = 'Unknown'
+        str_bit = 'Unknown_bit'
 
     # Sampling Rate
     if (fmt.fs == 44100):
@@ -1140,7 +1140,7 @@ def str_file_info(fmt):
     elif (fmt.fs == 96000):
         str_fs = '96k'
     else:
-        str_fs = 'Unknown'
+        str_fs = 'Unknown_fs'
 
     str_info_txt = '.' + str_ch + '.' + str_bit + str_format + '.' + str_fs
 
