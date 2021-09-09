@@ -36,10 +36,10 @@ import pyOssLearn as learn
 ####################################
 # 임펄스 음원
 ####################################
-# imp_dir = 'impulsefiles'       # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (OpenAir 다운로드)
-imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
+imp_dir = 'impulsefiles'       # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (OpenAir 다운로드)
+# imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
 
-# imp_name = "ElvedenHallMarbleHall"
+imp_name = "ElvedenHallMarbleHall"
 # imp_name = "EmptyApartmentBedroom"
 # imp_name = "FalklandPalaceRoyalTennisCourt"
 # imp_name = "InsidePiano"
@@ -51,7 +51,7 @@ imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 
 # imp_name = "TyndallBruceMonument"
 
 # imp_name = '경기국악당 IR-01.mono.24i.96k'
-imp_name = '국립국악원 우면당 IR-01.mono.24i.96k'
+# imp_name = '국립국악원 우면당 IR-01.mono.24i.96k'
 # imp_name = '김해문화의전당 IR.mono.24i.96k'
 # imp_name = '김해서부문화센터 IR.mono.24i.96k'
 # imp_name = '노원문화예술회관 IR.mono.24i.96k'
@@ -84,10 +84,6 @@ dbg.dWavInfo(st_fmt_ori)
 chunk_conv, data_conv, st_fmt_conv, t_conv = pyOssWavfile.readf32( imp_fname, samplerate=48000 )    # function of convert wav file to 32bit float format
 dbg.dWavInfo(st_fmt_conv)
 print(f" - Time(sec) =", t_conv)
-
-# Set directory save file
-# dir_impulse = os.path.join(os.getcwd(), imp_dir)
-# str_info_ori = pyOssWavfile.str_file_info(st_fmt_ori) + '.wav'
 
 ############################################################################################
 # Save coverted date as .wav and .npz file

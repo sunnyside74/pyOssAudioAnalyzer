@@ -985,7 +985,7 @@ def readf32(filename, samplerate=44100, mmap=False):
 
     # Convert Mono
     if struct_fmt.ch > 1:
-        temp_data = ori_data[:,0]        # only 1 channel if data is upto 2ch
+        temp_data = ori_data[:,0]        # only 1 channel(Left) if data is 2ch
         struct_fmt.ch = 1
     else:
         temp_data = ori_data
@@ -1002,7 +1002,7 @@ def readf32(filename, samplerate=44100, mmap=False):
         struct_fmt.format = 3
         struct_fmt.bitdepth = 32
 
-    # Sampling rate Convert to samplerate freq. use librosa resampling
+    # Sampling rate Convert to samplerate freq. use librosa resample
     if struct_fmt.fs != samplerate:
         temp_data = librosa.resample(temp_data, struct_fmt.fs, samplerate)
         struct_fmt.fs = samplerate
