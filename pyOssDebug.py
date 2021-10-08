@@ -3,9 +3,13 @@
 """
 
 # Import Default
-import os
 import struct
+import io
+import os
 import sys
+import math
+import platform
+
 
 # Import Library for math & plot
 import numpy as np
@@ -79,20 +83,31 @@ def dPlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt
 	plt.show()
 
 
-def dPrint(func_name, dText, dData):
+def dPrintFunc(func_name, dText, dData):
 	"""
     Print function for Debug
 
     Parameters
     ----------
-	func_name: function name text
-    dText: Text for Display
-	dData: Data for Display
+	func_name: string of function name text
+    dText: string of Text for Display
+	dData: string of Data for Display
 
     Returns
     -------
 	"""
 	print (func_name, dText, dData)
+
+
+def dPrintf(strings):
+	"""
+	Print Input strings for Debug
+
+	Parameters
+	----------
+	strings: text strings
+	"""
+	print (strings)
 
 
 def dWavInfo(fname):

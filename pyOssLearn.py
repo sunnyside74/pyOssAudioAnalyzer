@@ -67,7 +67,7 @@ def learning_decay(draw_plot, in_data, fs, fc, RT60=False, fname = "Please set f
     data_C80 = room.C80(data, fs)
     data_C50 = room.C50(data, fs)
 
-    Cacoustic_param = pyOssFilter.CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+    Cacoustic_param = room.CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
     Csample_param   = pyOssFilter.CsampledBParameter(s_0dB, s_10dB, s_20dB, s_30dB)
 
     # for DEBUG

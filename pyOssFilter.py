@@ -202,10 +202,8 @@ def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', ord
     if draw_plot:
         dbg.dPlotAudio(fs, data_filtered, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
 
-    # Calculation Normalized Decay Curve
-    decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))
-
     # Plot DecayCurve
+    decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))    # Calculation Normalized Decay Curve
     if draw_plot:
         dbg.dPlotDecay( fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
 
