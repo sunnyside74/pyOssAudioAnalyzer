@@ -39,7 +39,8 @@ import pyOssLearn as learn
 # str_fileinfo = '_mono_32f_44.1k'    # 파일명에 부가된 정보
 
 STAT_FILTER = False         # Filter Process Off: False, On: True
-STAT_SAVE_RESULT = True     # 결과물 저장 여부 선택 No Save: False, Save: True
+# STAT_SAVE_RESULT = True     # 결과물 저장 여부 선택 No Save: False, Save: True
+STAT_SAVE_RESULT = False     # 결과물 저장 여부 선택 No Save: False, Save: True
 result_dir = 'resultfiles'  # 결과물을 저장할 경로
 
 # LOAD IMPULSE WAVE FILE
@@ -61,8 +62,8 @@ result_dir = 'resultfiles'  # 결과물을 저장할 경로
 # 2차년도 취득 임펄스 파일
 imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
 
-imp_name = '경기국악당 IR-01.mono.32f.48k'
-# imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
+# imp_name = '경기국악당 IR-01.mono.32f.48k'
+imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
 # imp_name = '김해문화의전당 IR.mono.32f.48k'
 # imp_name = '김해서부문화센터 IR.mono.32f.48k'
 # imp_name = '노원문화예술회관 IR.mono.32f.48k'
@@ -176,7 +177,7 @@ else:
 
 tgt_rt60 = 2.5      # sec
 sample_tgt_rt60 = c_param.s_0dB + int(fs * tgt_rt60)
-print(c_param.s_0dB, sample_tgt_rt60)
+print("Pos 0dB = " + c_param.s_0dB, "Tgt RT60 = " + sample_tgt_rt60)
 
 k = 1
 draw_plot = False
@@ -192,61 +193,6 @@ if a_param.RT60[0][0] > tgt_rt60:
         p_20dB = c_param.s_20dB
         p_30dB = c_param.s_30dB
 
-        '''
-        #case 1: 
-        data_learn = data_learn * 0.8
-        data_temp = data_learn
-
-        # if k == 26:
-        #     draw_plot = True
-        # else:
-        #     draw_plot = False
-
-        # data_w_learned, decaycurve_w_learned, acoustic_w_param, sample_w_dB_param  = \
-        #     pyOssFilter.calc_filt_impulse_learning(draw_plot, data_imp, fs, fc, filt_type='butt',fname=imp_fname)
-        data_learn, decay, a_param, c_param  = \
-            learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
-        '''
-        '''
-        #case 2
-        if p_10dB > p_0dB and p_30dB > 0:
-            data_learn[0:p_10dB] = data_learn[0:p_10dB] * 0.9
-
-            if p_20dB > p_10dB:
-                data_learn[p_10dB:] = data_learn[p_10dB:] * 0.7
-
-            data_temp = data_learn
-
-            # if k == 26:
-            #     draw_plot = True
-            # else:
-            #     draw_plot = False
-
-            # data_learn, decay, a_param, c_param  = \
-            #     pyOssFilter.calc_filt_impulse_learning(draw_plot, data_temp, fs, fc, filt_type='butt',fname=imp_fname)
-            data_learn, decay, a_param, c_param  = \
-                learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
-        '''
-        '''
-        #case 3
-        if p_10dB > p_0dB and p_30dB > 0:
-            data_w_filtered[0:p_10dB] = data_w_filtered[0:p_10dB] * 0.8
-
-            if p_20dB > p_10dB:
-                data_w_filtered[p_10dB:p_20dB] = data_w_filtered[p_10dB:p_20dB] * 0.5
-
-            if p_30dB > p_20dB:
-                data_w_filtered[p_20dB:p_30dB] = data_w_filtered[p_20dB:p_30dB] * 0.3
-
-            data_w = data_w_filtered
-            if k == 26:
-                draw_plot = True
-            else:
-                draw_plot = False
-
-            data_w_filtered, decaycurve_w_filtered, acoustic_w_param, sample_w_dB_param  = \
-                pyOssFilter.calc_filt_impulse_learning(draw_plot, data_w, st_fmt_w.fs, fc, filt_type='butt',fname=wav_fname + str_fileinfo)
-        '''
         #case 4: oss
         gain_slope_a = np.ones(p_0dB, dtype='f')
         print( len(gain_slope_a) )
@@ -264,8 +210,8 @@ if a_param.RT60[0][0] > tgt_rt60:
         # if k <= 50 or k % 50 == 0:
             # print (k, " : ",  a_param.RT60[0][0])
             # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-        print (k, " : ",  a_param.RT60[0][0])
-        print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
+        # print (k, " : ",  a_param.RT60[0][0])
+        # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
 else:
     print("... < ", str(tgt_rt60))
     while a_param.RT60[0][0] < tgt_rt60:
@@ -276,63 +222,6 @@ else:
         p_10dB = c_param.s_10dB
         p_20dB = c_param.s_20dB
         p_30dB = c_param.s_30dB
-
-        '''
-        #case 1
-        data_learn = data_learn * 1.2
-        data_temp = data_learn
-
-        # if k == 50:
-        #     draw_plot = True
-        # else:
-        #     draw_plot = False
-
-        # data_w_learned, decaycurve_w_learned, acoustic_w_param, sample_w_dB_param  = \
-        #     pyOssFilter.calc_filt_impulse_learning(draw_plot, data_imp, fs, fc, filt_type='butt',fname=imp_fname)
-        data_learn, decay, a_param, c_param  = \
-            learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
-        '''
-        '''
-        #case 2
-        if p_10dB > p_0dB and p_30dB > 0:
-            data_learn[0:p_10dB] = data_learn[0:p_10dB] * 1.0
-
-            if p_20dB > p_10dB:
-                data_learn[p_10dB:] = data_learn[p_10dB:] * 1.1
-
-            data_temp = data_learn
-
-            # if k == 29:   
-            #     draw_plot = True
-            # else:
-            #     draw_plot = False
-
-            # data_learn, decay, a_param, c_param  = \
-            #     pyOssFilter.calc_filt_impulse_learning(draw_plot, data_temp, fs, fc, filt_type='butt',fname=imp_fname)
-            data_learn, decay, a_param, c_param  = \
-                learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
-        '''
-        '''
-        #case 3
-        if p_10dB > p_0dB and p_30dB > 0:
-            data_w_filtered[0:p_10dB] = data_w_filtered[0:p_10dB] * 1.1
-
-            if p_20dB > p_10dB:
-                data_w_filtered[p_10dB:p_20dB] = data_w_filtered[p_10dB:p_20dB] * 1.2
-
-            if p_30dB > p_20dB:
-                data_w_filtered[p_20dB:p_30dB] = data_w_filtered[p_20dB:p_30dB] * 1.5
-
-            data_w = data_w_filtered
-
-            if k == 26:
-                draw_plot = True
-            else:
-                draw_plot = False
-
-            data_w_filtered, decaycurve_w_filtered, acoustic_w_param, sample_w_dB_param  = \
-                pyOssFilter.calc_filt_impulse_learning(draw_plot, data_w, st_fmt_w.fs, fc, filt_type='butt',fname=wav_fname + str_fileinfo)
-        '''
 
         #case 4 
         gain_slope_a = np.ones(p_0dB, dtype='f')
@@ -351,8 +240,8 @@ else:
         # if k <= 50 or k % 50 == 0:
             # print (k, " : ",  a_param.RT60[0][0])
             # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-        print (k, " : ",  a_param.RT60[0][0])
-        print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
+        # print (k, " : ",  a_param.RT60[0][0])
+        # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
 
 print("=== Stop, k = ", k)
 # print("2-1. acoustic_w_param = ", acoustic_w_param)
