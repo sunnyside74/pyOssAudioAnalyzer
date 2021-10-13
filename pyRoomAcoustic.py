@@ -171,6 +171,8 @@ def decayCurve(sig, estimate, fs, noiseEnd=0):
     :param noiseEnd: the time at which the noise stimuli stops
     :return:
     """
+    if estimate is None:
+        estimate = sig.shape[0]/fs
 
     decayCurvePa = exponential(sig, estimate / 40, fs)
     decayCurveSPL = 20 * np.log10(abs(decayCurvePa))

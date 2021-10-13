@@ -39,8 +39,8 @@ import pyOssLearn as learn
 # str_fileinfo = '_mono_32f_44.1k'    # 파일명에 부가된 정보
 
 STAT_FILTER = False         # Filter Process Off: False, On: True
-# STAT_SAVE_RESULT = True     # 결과물 저장 여부 선택 No Save: False, Save: True
-STAT_SAVE_RESULT = False     # 결과물 저장 여부 선택 No Save: False, Save: True
+STAT_SAVE_RESULT = True     # 결과물 저장 여부 선택 No Save: False, Save: True
+# STAT_SAVE_RESULT = False     # 결과물 저장 여부 선택 No Save: False, Save: True
 result_dir = 'resultfiles'  # 결과물을 저장할 경로
 
 # LOAD IMPULSE WAVE FILE
@@ -63,7 +63,7 @@ result_dir = 'resultfiles'  # 결과물을 저장할 경로
 imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
 
 # imp_name = '경기국악당 IR-01.mono.32f.48k'
-imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
+# imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
 # imp_name = '김해문화의전당 IR.mono.32f.48k'
 # imp_name = '김해서부문화센터 IR.mono.32f.48k'
 # imp_name = '노원문화예술회관 IR.mono.32f.48k'
@@ -81,7 +81,7 @@ imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
 # imp_name = '천안예술의전당 IR-01.mono.32f.48k'
 # imp_name = '청주아트홀 IR.mono.32f.48k'
 # imp_name = '풍류홀 IR.mono.32f.48k'
-# imp_name = '한국문화의집 IR.mono.32f.48k'
+imp_name = '한국문화의집 IR.mono.32f.48k'
 
 imp_fname= imp_name
 
@@ -96,6 +96,11 @@ if t_imp < 3.0:
     t_temp = 3.0 - t_imp
     data = pyOssWavfile.insertSilence(data_imp, fs, t_temp)
     dbg.dPrintf(data.shape[0]/fs)
+
+# 불러온 임펄스 파일의 음향 파라미터 특성 출력
+decay_imp = room.decayCurve(data_imp, estimate=None, fs=fs)
+dbg.dPrintAParam(room.calcAcousticParam(data_imp, room.decayCurve(data_imp, estimate=None, fs=fs), fs))
+dbg.dPrintAParam(room.calcAcousticParam(data_imp, room.decayCurve(data_imp, estimate=1.42, fs=fs), fs))
 
 ###############################################################################
 # Test Audio Data(Anechoic Audio) Load
@@ -157,10 +162,11 @@ else:
     ori_name = imp_fname
 
 # Save Convolved Wav File
-sname_ori = pyOssWavfile.str_fname(result_dir, aud_name + '.ori.' + ori_name) # 파일경로 + 파일이름
-# dbg.dPrintf(sname_ori)  # for debug
-pyOssWavfile.write(sname_ori, fs, data_convolve_ori)    # 무향실 음원에 필터링 된 임펄스를 적용한 wav file 저장
-print('* Save complete convolution data original')
+if STAT_SAVE_RESULT == True:
+    sname_ori = pyOssWavfile.str_fname(result_dir, aud_name + '.ori.' + ori_name) # 파일경로 + 파일이름
+    # dbg.dPrintf(sname_ori)  # for debug
+    pyOssWavfile.write(sname_ori, fs, data_convolve_ori)    # 무향실 음원에 필터링 된 임펄스를 적용한 wav file 저장
+    print('* Save complete convolution data original')
 
 ###############################################################################
 # Reinforcement Learning Process with filtered impulse data
@@ -177,7 +183,7 @@ else:
 
 tgt_rt60 = 2.5      # sec
 sample_tgt_rt60 = c_param.s_0dB + int(fs * tgt_rt60)
-print("Pos 0dB = " + c_param.s_0dB, "Tgt RT60 = " + sample_tgt_rt60)
+print('Pos 0dB = %d, Tgt RT60 = %d' % (c_param.s_0dB, sample_tgt_rt60))
 
 k = 1
 draw_plot = False
@@ -193,12 +199,24 @@ if a_param.RT60[0][0] > tgt_rt60:
         p_20dB = c_param.s_20dB
         p_30dB = c_param.s_30dB
 
-        #case 4: oss
-        gain_slope_a = np.ones(p_0dB, dtype='f')
-        print( len(gain_slope_a) )
-        # gain_slope_b = np.linspace( 1.0, 0.7, num=(data_learn.shape[0]-p_0dB) )
-        gain_slope_b = np.logspace( 0, -0.1, num=(data_learn.shape[0]-p_0dB) )
-        gain_slope = np.append( gain_slope_a, gain_slope_b )
+        #case 4: 
+        # gain_slope_a = np.ones(p_0dB, dtype='f')
+        # print( len(gain_slope_a) )
+        # # gain_slope_b = np.linspace( 1.0, 0.7, num=(data_learn.shape[0]-p_0dB) )
+        # gain_slope_b = np.logspace( 0, -0.1, num=(data_learn.shape[0]-p_0dB) )
+        # gain_slope = np.append( gain_slope_a, gain_slope_b )
+        # data_temp = data_learn * gain_slope
+        # data_learn, decay, a_param, c_param  = \
+        #     learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
+
+        # case 5
+        gain_slope_a = np.ones(p_0dB, dtype='f') # 시작점(0dB)까지
+        gain_slope_b = np.logspace( 0, -0.1, num=( p_10dB-p_0dB ) ) # 0dB ~ -10dB(EDT)
+        gain_slope_c = np.logspace( 0, -0.2, num=( p_30dB-p_10dB ) )# -10dB ~ -30dB 
+        gain_slope_d = np.ones((data_learn.shape[0]-p_30dB), dtype='f') # (Reverberation)
+        gain_slope = np.append( gain_slope_a, gain_slope_b)
+        gain_slope = np.append( gain_slope, gain_slope_c)
+        gain_slope = np.append( gain_slope, gain_slope_d)
         data_temp = data_learn * gain_slope
         data_learn, decay, a_param, c_param  = \
             learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
@@ -224,10 +242,22 @@ else:
         p_30dB = c_param.s_30dB
 
         #case 4 
-        gain_slope_a = np.ones(p_0dB, dtype='f')
-        # gain_slope_b = np.linspace( 1.0, 1.3, num=(data_filt.shape[0]-p_0dB) )
-        gain_slope_b = np.logspace( 0, 0.1, num=(data_learn.shape[0]-p_0dB) )
-        gain_slope = np.append( gain_slope_a, gain_slope_b )
+        # gain_slope_a = np.ones(p_0dB, dtype='f')
+        # # gain_slope_b = np.linspace( 1.0, 1.3, num=(data_filt.shape[0]-p_0dB) )
+        # gain_slope_b = np.logspace( 0, 0.1, num=(data_learn.shape[0]-p_0dB) )
+        # gain_slope = np.append( gain_slope_a, gain_slope_b )
+        # data_temp = data_learn * gain_slope
+        # data_learn, decay, a_param, c_param  = \
+        #     learn.learning_decay(True, data_temp, fs, fc, fname=imp_fname)
+
+        # case 5
+        gain_slope_a = np.ones(p_0dB, dtype='f') # 시작점(0dB)까지
+        gain_slope_b = np.logspace( 0, 0.1, num=( p_10dB-p_0dB ) ) # 0dB ~ -10dB(EDT)
+        gain_slope_c = np.logspace( 0, 0.2, num=( p_30dB-p_10dB ) )# -10dB ~ -30dB 
+        gain_slope_d = np.ones((data_learn.shape[0]-p_30dB), dtype='f') # (Reverberation)
+        gain_slope = np.append( gain_slope_a, gain_slope_b)
+        gain_slope = np.append( gain_slope, gain_slope_c)
+        gain_slope = np.append( gain_slope, gain_slope_d)
         data_temp = data_learn * gain_slope
         data_learn, decay, a_param, c_param  = \
             learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
@@ -254,16 +284,26 @@ print('2-5. sample_w_dB_param.s_10dB = ', c_param.s_10dB)
 print('2-6. sample_w_dB_param.s_20dB = ', c_param.s_20dB)
 print('2-7. sample_w_dB_param.s_30dB = ', c_param.s_30dB)
 
-dbg.dPlotAudio(fs, gain_slope)
-dbg.dPlotAudio(fs, data_learn, title_txt=trans_name, label_txt='k='+str(k), xl_txt='Time(sec)', yl_txt='Amplitude' )
-dbg.dPlotDecay(fs, decay, ' decay curve of ' + trans_name, label_txt='k='+str(k), xl_txt='Time(sec)', yl_txt='Amplitude' )
+if draw_plot == True:
+    dbg.dPlotAudio(fs, gain_slope)
+    dbg.dPlotAudio(fs, data_learn, title_txt=trans_name, label_txt='k='+str(k), xl_txt='Time(sec)', yl_txt='Amplitude' )
+    dbg.dPlotDecay(fs, decay, ' decay curve of ' + trans_name, label_txt='k='+str(k), xl_txt='Time(sec)', yl_txt='Amplitude' )
 
 # Convolution Anechoic Audio with Reinforcement Learned Impulse data
 data_convolve_trans = sig.fftconvolve(data_aud, data_learn)
 
+# Save Learned Impulse
+if STAT_SAVE_RESULT == True:
+    imp_learn_fname = imp_name + str(a_param.RT60) + 'k=' + str(k)
+    sname_imp_learn = pyOssWavfile.str_fname(result_dir, imp_learn_fname)
+    pyOssWavfile.write(sname_imp_learn, fs, data_learn)
+    dbg.dPrintf('* Save complete learned impulse data')
+
+
 # Save Learning Processed Wav File
-sname_trans = pyOssWavfile.str_fname(result_dir, aud_name + '.trans.' + trans_name)
-dbg.dPrintf(sname_trans)
-pyOssWavfile.write(sname_trans, fs, data_convolve_trans)
-dbg.dPrintf('* Save complete convolution data trans')
+if STAT_SAVE_RESULT == True:
+    sname_trans = pyOssWavfile.str_fname(result_dir, aud_name + '.trans.' + trans_name)
+    # dbg.dPrintf(sname_trans)
+    pyOssWavfile.write(sname_trans, fs, data_convolve_trans)
+    dbg.dPrintf('* Save complete convolution data trans')
 

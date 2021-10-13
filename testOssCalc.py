@@ -96,7 +96,8 @@ wav_name = "singing"
 # wav_name = 'ju_anecho_Thea_Male'
 
 # 파일명 조합
-wav_fname = pyOssWavfile.str_fname(audio_dir, wav_name + str_fileinfo)
+# wav_fname = pyOssWavfile.str_fname(audio_dir, wav_name + str_fileinfo)
+wav_fname = pyOssWavfile.str_fname(audio_dir, wav_name)
 
 # Check Wav Header Information
 st_fmt_a = pyOssWavfile.extractWavFmtChunk( pyOssWavfile.read_format(wav_fname) )

@@ -43,15 +43,15 @@ def learning_decay(draw_plot, in_data, fs, fc, RT60=False, fname = "Please set f
     t_time = data.shape[0] / fs
 
     # Plot Filtered Impulse Data
-    if draw_plot:
-        dbg.dPlotAudio(fs, data, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+    # if draw_plot:
+        # dbg.dPlotAudio(fs, data, 1.0, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
 
     # Calculation Normalized Decay Curve
     decaycurve = numpy.float32(room.decayCurve(in_data, t_time, fs))
 
     # Plot DecayCurve
     if draw_plot:
-        dbg.dPlotDecay( fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+        dbg.dPlotDecay( fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude", newWindow=True)
 
     # Calculation Acoustic Parameters
     data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)

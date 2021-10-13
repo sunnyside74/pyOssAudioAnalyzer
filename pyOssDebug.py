@@ -14,6 +14,7 @@ import platform
 # Import Library for math & plot
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.core.numeric import False_
 
 # Import User Library
 import pyOssWavfile
@@ -21,7 +22,7 @@ import pyRoomAcoustic as room
 
 #%matplotlib tk
 
-def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y"):
+def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False):
 	"""
     plot audio array using matplot for debug
 
@@ -41,6 +42,9 @@ def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="l
 	end_time = data_plot.shape[0] / audio_fs	# fs: audio_fmt_chunk[3]
 
 	plot_time = np.linspace(start_time, end_time, data_plot.shape[0])
+
+	if newWindow == True:
+		plt.figure()
 	plt.title(title_txt)
 	fig = plt.plot(plot_time, data_plot, label=label_txt)
 	plt.legend()
@@ -52,7 +56,7 @@ def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="l
 	plt.show()
 
 
-def dPlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y"):
+def dPlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False):
 	"""
     plot audio array using matplot for debug
 
@@ -72,6 +76,9 @@ def dPlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt
 	end_time = data_plot.shape[0] / audio_fs	# fs: audio_fmt_chunk[3]
 
 	plot_time = np.linspace(start_time, end_time, data_plot.shape[0])
+
+	if newWindow == True:
+		plt.figure()
 	plt.title(title_txt)
 	fig = plt.plot(plot_time, data_plot, label=label_txt)
 	plt.legend()
