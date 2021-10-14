@@ -90,3 +90,18 @@ def learning_decay(draw_plot, in_data, fs, fc, RT60=False, fname = "Please set f
     # print("Start -30dB=", Csample_param.s_30dB)
 
     return  data, decaycurve, Cacoustic_param, Csample_param
+
+
+def calc_gain_slope( CDecayCurvePos, valDataLength ):
+    # case 1
+    gain_slope_a = numpy.ones( CDecayCurvePos.s_0dB, dtype='f' ) # 시작점(0dB)까지
+    gain_slope_b = numpy.logspace( 0, -0.1, num=( CDecayCurvePos.s_10dB - CDecayCurvePos.s_0dB ) ) # 0dB ~ -10dB(EDT)
+    gain_slope_c = numpy.logspace( 0, -0.2, num=( CDecayCurvePos.s_30dB - CDecayCurvePos.s_10dB ) )# -10dB ~ -30dB 
+    gain_slope_d = numpy.ones( ( valDataLength-CDecayCurvePos.s_30dB ), dtype='f' ) # (Reverberation)
+
+
+    gain_slope = numpy.append( gain_slope_a, gain_slope_b)
+    gain_slope = numpy.append( gain_slope, gain_slope_c)
+    gain_slope = numpy.append( gain_slope, gain_slope_d)
+
+    return gain_slope
