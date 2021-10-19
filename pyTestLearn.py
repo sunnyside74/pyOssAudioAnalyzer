@@ -39,10 +39,10 @@ import pyOssLearn as learn
 # str_fileinfo = '_mono_32f_44.1k'    # 파일명에 부가된 정보
 
 STAT_FILTER = False                 # Filter Process Off: False, On: True
-STAT_SAVE_IMPULSE = True            # 필터처리 또는 강화학습 한 임펄스 데이터 저장 여부
-STAT_SAVE_WAV_ORI = True          # 음장 처리된 파일의 저장 여부 선택
-STAT_SAVE_RESULT = True           # 임펄스 적용 결과물 저장 여부 선택 No Save: False, Save: True
-STAT_DRAW = False                   # 결과물 그림 출력
+STAT_SAVE_IMPULSE = False            # 필터처리 또는 강화학습 한 임펄스 데이터 저장 여부
+STAT_SAVE_WAV_ORI = False          # 음장 처리된 파일의 저장 여부 선택
+STAT_SAVE_RESULT = False           # 임펄스 적용 결과물 저장 여부 선택 No Save: False, Save: True
+STAT_DRAW = True                  # 결과물 그림 출력
 STAT_SAVE_FIGURE = True            # 결과물 이미지 저장 여부
 
 result_dir = 'resultfiles'         # 결과물을 저장할 경로
@@ -70,7 +70,7 @@ imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 
 # imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
 # imp_name = '김해문화의전당 IR.mono.32f.48k'
 # imp_name = '김해서부문화센터 IR.mono.32f.48k'
-# imp_name = '노원문화예술회관 IR.mono.32f.48k'
+imp_name = '노원문화예술회관 IR.mono.32f.48k'
 # imp_name = '대구범어성당 IR.mono.32f.48k'
 # imp_name = '돈화문국악당.mono.32f.48k'
 # imp_name = '세종문화회관 대극장 IR-01.mono.32f.48k'
@@ -85,7 +85,7 @@ imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 
 # imp_name = '천안예술의전당 IR-01.mono.32f.48k'
 # imp_name = '청주아트홀 IR.mono.32f.48k'
 # imp_name = '풍류홀 IR.mono.32f.48k'
-imp_name = '한국문화의집 IR.mono.32f.48k'
+# imp_name = '한국문화의집 IR.mono.32f.48k'
 
 imp_fname= imp_name
 dbg.dPrintf(imp_fname + '.wav')
@@ -113,8 +113,13 @@ decay_imp = room.decayCurve(data_imp, estimate=None, fs=fs)
 imp_param = room.calcAcousticParam(data_imp, decay_imp, fs)
 dbg.dPrintAParam(imp_param)
 # dbg.dPrintAParam(room.calcAcousticParam(data_imp, room.decayCurve(data_imp, estimate=None, fs=fs), fs))
+
 if STAT_DRAW:
-    dbg.dPlotDecay(fs, decay_imp, imp_name, imp_name)
+    dbg.dPlotAudio(fs, data_imp, title_txt=imp_name, label_txt='Original', xl_txt='Time(sec)', yl_txt='Amplitude' )
+
+if STAT_DRAW:
+    # dbg.dPlotDecay(fs, decay_imp, imp_name, imp_name)
+    dbg.dPlotDecay(fs, decay_imp, ' decay curve of ' + imp_name, label_txt='Original', xl_txt='Time(sec)', yl_txt='Amplitude' )
 
 ###############################################################################
 # Test Audio Data(Anechoic Audio) Load
