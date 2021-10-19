@@ -40,19 +40,12 @@ import pyOssLearn as learn
 
 STAT_FILTER = False                 # Filter Process Off: False, On: True
 STAT_SAVE_IMPULSE = True            # 필터처리 또는 강화학습 한 임펄스 데이터 저장 여부
-STAT_SAVE_WAV_ORI = False          # 음장 처리된 파일의 저장 여부 선택
-STAT_SAVE_RESULT = False           # 임펄스 적용 결과물 저장 여부 선택 No Save: False, Save: True
-STAT_DRAW = True                   # 결과물 그림 출력
+STAT_SAVE_WAV_ORI = True          # 음장 처리된 파일의 저장 여부 선택
+STAT_SAVE_RESULT = True           # 임펄스 적용 결과물 저장 여부 선택 No Save: False, Save: True
+STAT_DRAW = False                   # 결과물 그림 출력
 STAT_SAVE_FIGURE = True            # 결과물 이미지 저장 여부
 
 result_dir = 'resultfiles'         # 결과물을 저장할 경로
-
-dbg.dPrintf( 'STAT_FILTER = ' + str( STAT_FILTER ) )
-dbg.dPrintf( 'STAT_SAVE_IMPULSE = ' + str( STAT_SAVE_IMPULSE ) )
-dbg.dPrintf( 'STAT_SAVE_WAV_ORI = ' + str( STAT_SAVE_WAV_ORI ) )
-dbg.dPrintf( 'STAT_SAVE_RESULT = ' + str( STAT_SAVE_RESULT ) )
-dbg.dPrintf( 'STAT_DRAW = ' + str( STAT_DRAW ) )
-
 
 # LOAD IMPULSE WAVE FILE
 # OpenAir 임펄스 파일 
@@ -66,7 +59,7 @@ dbg.dPrintf( 'STAT_DRAW = ' + str( STAT_DRAW ) )
 # imp_name = "SportsCentreUniversityOfYork.mono.32f.48k"
 # imp_name = "StairwayUniversityOfYork.mono.32f.48k"
 # imp_name = "StAndrewsChurch.mono.32f.48k"
-# imp_name = "mh3_000_ortf_48k.mono.32f.48k"
+# imp_name = "mh3_000_ortf_48k.mono.32f.48k"            # -> 파일 없음
 # imp_name = "TyndallBruceMonument.mono.32f.48k"
 
 
@@ -74,7 +67,7 @@ dbg.dPrintf( 'STAT_DRAW = ' + str( STAT_DRAW ) )
 imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
 
 # imp_name = '경기국악당 IR-01.mono.32f.48k'
-imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
+# imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
 # imp_name = '김해문화의전당 IR.mono.32f.48k'
 # imp_name = '김해서부문화센터 IR.mono.32f.48k'
 # imp_name = '노원문화예술회관 IR.mono.32f.48k'
@@ -92,9 +85,16 @@ imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
 # imp_name = '천안예술의전당 IR-01.mono.32f.48k'
 # imp_name = '청주아트홀 IR.mono.32f.48k'
 # imp_name = '풍류홀 IR.mono.32f.48k'
-# imp_name = '한국문화의집 IR.mono.32f.48k'
+imp_name = '한국문화의집 IR.mono.32f.48k'
 
 imp_fname= imp_name
+dbg.dPrintf(imp_fname + '.wav')
+dbg.dPrintf( ' - STAT_FILTER = ' + str( STAT_FILTER ) )
+dbg.dPrintf( ' - STAT_SAVE_IMPULSE = ' + str( STAT_SAVE_IMPULSE ) )
+dbg.dPrintf( ' - STAT_SAVE_WAV_ORI = ' + str( STAT_SAVE_WAV_ORI ) )
+dbg.dPrintf( ' - STAT_SAVE_RESULT = ' + str( STAT_SAVE_RESULT ) )
+dbg.dPrintf( ' - STAT_DRAW = ' + str( STAT_DRAW ) )
+
 
 impulse_fname = pyOssWavfile.str_fname(imp_dir, imp_fname) # 임펄스 파일에 대한 전체경로, 파일명 조합
 fmt_imp, data_imp, st_fmt_imp, t_imp = pyOssWavfile.readf32(impulse_fname, 48000)
@@ -150,7 +150,7 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
             sname_imp_filt = pyOssWavfile.str_fname(result_dir, imp_filt_fname)
             # dbg.dPrintf(sname_imp_filt)  # for debug
             pyOssWavfile.write(sname_imp_filt, fs, data_filt)
-            print('* Save complete %s', imp_filt_fname)
+            print('* Save complete %s' % imp_filt_fname)
 
         # Convolution Process with Anechoic audio data and Filtered impulse data
         data_convolve_ori = sig.fftconvolve(data_aud, data_filt)
@@ -161,7 +161,7 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
             sname_ori = pyOssWavfile.str_fname(result_dir, aud_name + '.ori.' + ori_name) # 파일경로 + 파일이름
             # dbg.dPrintf(sname_ori)  # for debug
             pyOssWavfile.write(sname_ori, fs, data_convolve_ori)    # 무향실 음원에 필터링 된 임펄스를 적용한 wav file 저장
-            print('* Save complete %s', aud_name + '.ori.' + ori_name)
+            print('* Save complete %s' % aud_name + '.ori.' + ori_name)
 
         # Reinforcement Learning Process with filtered impulse data
         data_learn = data_filt          # 강화학습에 사용할 임펄스 데이터는 '필터 처리 한 임펄스 데이터'
@@ -170,7 +170,7 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
         # Reinforcement Learning
         tgt_rt60 = 2.5      # sec
         sample_tgt_rt60 = c_param.s_0dB + int(fs * tgt_rt60)
-        print('Pos 0dB = %d, Tgt RT60 = %d' % (c_param.s_0dB, sample_tgt_rt60))
+        print('\n Pos 0dB = %d, Tgt RT60 = %d \n' % (c_param.s_0dB, sample_tgt_rt60))
 
         k = 1
         draw_plot = False
@@ -301,7 +301,7 @@ else:
         sname_ori = pyOssWavfile.str_fname(result_dir, aud_name + '.ori.' + ori_name) # 파일경로 + 파일이름
         # dbg.dPrintf(sname_ori)  # for debug
         pyOssWavfile.write(sname_ori, fs, data_convolve_ori)    # 무향실 음원에 필터링 된 임펄스를 적용한 wav file 저장
-        print('* Save complete %s',ori_name)
+        print('* Save complete %s' % ori_name)
 
     data_learn = data_imp           # 사용할 임펄스 데이터가 원본 임펄스 데이터
     trans_name = imp_fname          # 강화학습 처리 한 음장처리 결과 파일 저장에 사용할 이름          
@@ -309,7 +309,7 @@ else:
     # Reinforcement Learning
     tgt_rt60 = 2.5      # sec
     sample_tgt_rt60 = c_param.s_0dB + int(fs * tgt_rt60)
-    print('Pos 0dB = %d, Tgt RT60 = %d' % (c_param.s_0dB, sample_tgt_rt60))
+    print('\n Pos 0dB = %d, Tgt RT60 = %d' % (c_param.s_0dB, sample_tgt_rt60))
 
     k = 1
     draw_plot = False
