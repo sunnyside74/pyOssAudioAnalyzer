@@ -149,9 +149,8 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
         dbg.dPrintf( c_param.__dict__ )
 
         # Save filtering impulse data
-        imp_filt_fname = imp_name + '.filtered_' + str(fc) + 'Hz'
-
         if STAT_SAVE_IMPULSE == True:
+            imp_filt_fname = imp_name + '.filtered_' + str(fc) + 'Hz'
             sname_imp_filt = pyOssWavfile.str_fname(result_dir, imp_filt_fname)
             # dbg.dPrintf(sname_imp_filt)  # for debug
             pyOssWavfile.write(sname_imp_filt, fs, data_filt)
