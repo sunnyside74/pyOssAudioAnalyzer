@@ -466,7 +466,6 @@ def soundspeed(c_degree=20):
     ----------
     :return c: 음속 sound speed  
     """
-    c_degree = 20               # Temperature of air (Celsius) 
     c = 331.5 + 0.606*c_degree  # speed of Sound (at 1000 hPa)
     return c
 

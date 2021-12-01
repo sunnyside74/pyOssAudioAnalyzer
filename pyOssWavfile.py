@@ -992,11 +992,11 @@ def readf32(filename, samplerate=44100, mmap=False):
 
     # Type Conversion float32 & Normalize(-1.0 ~ 1.0) (except 8 bit audio)
     if temp_data.dtype == 'int16':
-        temp_data = numpy.float32(temp_data/(2**15-1))
+        temp_data = numpy.float32(temp_data/(2**15-1))          # Convert 16bit integer to 32bit float
     elif temp_data.dtype == 'int32':
-        temp_data = numpy.float32(temp_data/(2**31-1))
+        temp_data = numpy.float32(temp_data/(2**31-1))          # Convert 32bit integer to 32bit float
     elif temp_data.dtype == 'float64':
-        temp_data = numpy.float32(temp_data)
+        temp_data = numpy.float32(temp_data)                    # Convert 64bit float to 32bit float
 
     if (temp_data.dtype == 'float32'):
         struct_fmt.format = 3
@@ -1005,6 +1005,7 @@ def readf32(filename, samplerate=44100, mmap=False):
     # Sampling rate Convert to samplerate freq. use librosa resample
     if struct_fmt.fs != samplerate:
         temp_data = librosa.resample(temp_data, struct_fmt.fs, samplerate)
+        print ("Resample" + str(struct_fmt.fs) + "to" + str(samplerate))
         struct_fmt.fs = samplerate
 
     # Format Chunk Update 
@@ -1146,6 +1147,10 @@ def str_file_info(fmt):
 
     return str_info_txt
 
+# Normalization
+def normalize(data):
+    high, low = abs(max(data)), abs(min(data))
+    return data / max(high, low)
 
 
 class CWavHeaderInfo:

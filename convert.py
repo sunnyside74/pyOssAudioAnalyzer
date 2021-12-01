@@ -14,6 +14,7 @@ import sys
 import math
 import platform
 
+
 # Import Audio
 import pyaudio
 import librosa
@@ -31,73 +32,46 @@ import pyOssDebug as dbg
 import pyOssFilter
 import pyOssLearn as learn
 
+
+
+global g_current_file
+g_current_file = ""
+
 #################################
 # Load Original Audio File
 #################################
 
 # Directories of Original Files
-# ori_dir = 'impulsefiles'       # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (OpenAir 다운로드)
-# ori_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
-# ori_dir = 'ju_impulse3'        # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
+# ori_dir = 'impulsefiles'      # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (OpenAir 다운로드)
+# ori_dir = 'ju_impulse2'       # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득 2차)
+ori_dir = 'ju_impulse3'       # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득 3차)
+# ori_dir = 'ju_anechoic3'      # 무향실 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득 3차)
 
 # Directories of Converted Files
-# 
+save_dir = 'ju_impulse3'
+# save_dir = 'ju_anechoic3'
 
-# 음원
-ori_name = "ElvedenHallMarbleHall"
-# ori_name = "EmptyApartmentBedroom"
-# ori_name = "FalklandPalaceRoyalTennisCourt"
-# ori_name = "InsidePiano"
-# ori_name = "MaesHowe"
-# ori_name = "SportsCentreUniversityOfYork"
-# ori_name = "StairwayUniversityOfYork"
-# ori_name = "StAndrewsChurch"
-# ori_name = "mh3_000_ortf_48k"
-# ori_name = "TyndallBruceMonument"
+for filename in os.listdir(ori_dir):
+    if filename.endswith(".wav"):
+        file_directory = os.path.join(ori_dir, filename)
 
-# imp_name = '경기국악당 IR-01.mono.24i.96k'
-# imp_name = '국립국악원 우면당 IR-01.mono.24i.96k'
-# imp_name = '김해문화의전당 IR.mono.24i.96k'
-# imp_name = '김해서부문화센터 IR.mono.24i.96k'
-# imp_name = '노원문화예술회관 IR.mono.24i.96k'
-# imp_name = '대구범어성당 IR.mono.24i.96k'
-# imp_name = '돈화문국악당.mono.24i.96k'
-# imp_name = '세종문화회관 대극장 IR-01.mono.24i.96k'
-# imp_name = '세종문화회관 채임버홀.mono.24i.96k'
-# imp_name = '승동교회 IR.mono.24i.96k'
-# imp_name = '아람누리 음악당 IR.mono.24i.96k'
-# imp_name = '아람콘서트홀 IR.mono.24i.96k'
-# imp_name = '애터미공연장 IR-01.mono.24i.96k'
-# imp_name = '우란문화재단 공연장 IR-01.mono.24i.96k'
-# imp_name = '울산중구문화의전당 IR-01.mono.24i.96k'
-# imp_name = '전주완산여고 IR.mono.24i.96k'
-# imp_name = '천안예술의전당 IR-01.mono.24i.96k'
-# imp_name = '청주아트홀 IR.mono.24i.96k'
-# imp_name = '풍류홀 IR.mono.24i.96k'
-# imp_name = '한국문화의집 IR.mono.24i.96k'
+        print("\n\n\n")
+        print("file_directory = ", file_directory)
 
-# 파일명 조합
-ori_fname = pyOssWavfile.str_fname(dir, ori_name)
+        g_current_file = filename       #global
 
-# Check Original Impulse Wav file Header Information
-st_fmt_ori = pyOssWavfile.extractWavFmtChunk( pyOssWavfile.read_format(ori_fname) )
-dbg.dWavInfo(st_fmt_ori)
+        fname = filename[:-4]
+        ori_fname = pyOssWavfile.str_fname(ori_dir, fname)  # 파일명 조합
 
-############################################################################################
-# Load Original Audio & Convert format mono / float32 / 48000Hz 
-############################################################################################
-chunk_conv, data_conv, st_fmt_conv, t_conv = pyOssWavfile.readf32( ori_fname, samplerate=48000 )    # function of convert wav file to 32bit float format
-dbg.dWavInfo(st_fmt_conv)
-print(f" - Time(sec) =", t_conv)
+        # Check Original Impulse Wav file Header Information
+        st_fmt_ori = pyOssWavfile.extractWavFmtChunk( pyOssWavfile.read_format(ori_fname) )
+        dbg.dWavInfo(st_fmt_ori)
 
-############################################################################################
-# Save coverted date as .wav and .npz file
-############################################################################################
-str_info_conv = pyOssWavfile.str_file_info(st_fmt_conv)
+        # Load Original Audio & Convert format mono / float32 / 48000Hz 
+        chunk_conv, data_conv, st_fmt_conv, t_conv = pyOssWavfile.readf32( ori_fname, samplerate=48000 )    # function of convert wav file to 32bit float format
+        dbg.dWavInfo(st_fmt_conv)
+        print(f" - Time(sec) =", t_conv)
 
-# Set saving directory 
-dir_result = os.path.join(os.getcwd(), save_dir)
-# save .wav file
-# pyOssWavfile.write(os.path.join(dir_result, imp_name + str_info_conv + '.wav'), st_fmt_conv.fs, data_conv)
-# save npz file
-# pyOssWavfile.save_oss_npz(os.path.join(dir_result, imp_name + str_info_conv + '.npz'), data_conv, st_fmt_conv, t_conv)
+        str_info_conv = pyOssWavfile.str_file_info(st_fmt_conv)
+        dir_result = os.path.join(os.getcwd(), save_dir)
+        pyOssWavfile.write(os.path.join(dir_result, fname + str_info_conv + '.wav'), st_fmt_conv.fs, data_conv)

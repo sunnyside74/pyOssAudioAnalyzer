@@ -45,7 +45,8 @@ STAT_SAVE_RESULT = False           # 임펄스 적용 결과물 저장 여부 �
 STAT_DRAW = True                  # 결과물 그림 출력
 STAT_SAVE_FIGURE = True            # 결과물 이미지 저장 여부
 
-result_dir = 'resultfiles'         # 결과물을 저장할 경로
+# result_dir = 'resultfiles'         # 결과물을 저장할 경로
+result_dir = 'ju_impulse3'         # 결과물을 저장할 경로
 
 # LOAD IMPULSE WAVE FILE
 # OpenAir 임펄스 파일 
@@ -63,8 +64,8 @@ result_dir = 'resultfiles'         # 결과물을 저장할 경로
 # imp_name = "TyndallBruceMonument.mono.32f.48k"
 
 
-# 2차년도 취득 임펄스 파일
-imp_dir = 'ju_impulse'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득)
+# imp_dir = 'ju_impulse2'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득 2차)
+imp_dir = 'ju_impulse3'         # 임펄스 음원 파일이 있는 프로젝트 내 폴더명 (전주대, 사운드코리아이엔지 직접 취득 3차)
 
 # imp_name = '경기국악당 IR-01.mono.32f.48k'
 # imp_name = '국립국악원 우면당 IR-01.mono.32f.48k'
