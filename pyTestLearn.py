@@ -214,7 +214,7 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
                 # Process
                 data_temp = data_learn * gain_slope
                 data_learn, decay, a_param, c_param  = \
-                    learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
+                    learn.learning_decay(data_temp, fs)
 
                 if a_param.RT60[0][0] == 0.0 or k > 1000:
                     print("K IS ==== ", k)
@@ -257,7 +257,7 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
 
                 data_temp = data_learn * gain_slope
                 data_learn, decay, a_param, c_param  = \
-                    learn.learning_decay(draw_plot, data_temp, fs, fc, fname=imp_fname)
+                    learn.learning_decay(data_temp, fs)
 
                 if a_param.RT60[0][0] == 0.0 or k > 1000:
                     print("K IS ==== ", k)
@@ -353,7 +353,7 @@ else:
             # Process
             data_temp = data_learn * gain_slope
             data_learn, decay, a_param, c_param  = \
-                learn.learning_decay(draw_plot, data_temp, fs, fc=0, fname=imp_fname)
+                learn.learning_decay(data_temp, fs)
 
             if a_param.RT60[0][0] == 0.0 or k > 1000:
                 break
@@ -395,7 +395,7 @@ else:
 
             data_temp = data_learn * gain_slope
             data_learn, decay, a_param, c_param  = \
-                learn.learning_decay(draw_plot, data_temp, fs, fc=0, fname=imp_fname)
+                learn.learning_decay(data_temp, fs)
 
             if a_param.RT60[0][0] == 0.0 or k > 1000:
                 print("K IS ==== ", k)

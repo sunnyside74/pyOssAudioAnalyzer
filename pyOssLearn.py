@@ -16,7 +16,7 @@ import pyOssDebug as dbg
 import pyOssFilter
 
 
-def learning_decay(draw_plot, in_data, fs, fc, RT60=False, fname = "Please set file name"):
+def learning_decay(in_data, fs, RT60=False):
     """ Impulse
 
     Parameters
@@ -40,18 +40,10 @@ def learning_decay(draw_plot, in_data, fs, fc, RT60=False, fname = "Please set f
         data = in_data
         str_ch_name = "Mono"
 
-    t_time = data.shape[0] / fs
-
-    # Plot Filtered Impulse Data
-    # if draw_plot:
-        # dbg.dPlotAudio(fs, data, 1.0, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
+    estimate_time = data.shape[0] / fs
 
     # Calculation Normalized Decay Curve
-    decaycurve = numpy.float32(room.decayCurve(in_data, t_time, fs))
-
-    # Plot DecayCurve
-    if draw_plot:
-        dbg.dPlotDecay( fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude", newWindow=True)
+    decaycurve = numpy.float32(room.decayCurve(in_data, estimate_time, fs))
 
     # Calculation Acoustic Parameters
     data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)
@@ -69,25 +61,6 @@ def learning_decay(draw_plot, in_data, fs, fc, RT60=False, fname = "Please set f
 
     Cacoustic_param = room.CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
     Csample_param   = pyOssFilter.CsampledBParameter(s_0dB, s_10dB, s_20dB, s_30dB)
-
-    # for DEBUG
-    # print("Impulse Name: " + fname + ", Filter: " + filter_name + ", " + str(fc) + "Hz" )
-    # print("T10=", data_EDT/6)      # for Debug
-    # print("T20=", data_t20)          # for Debug
-    # print("T30=", data_t30)          # for Debug
-    # if RT60 is True:
-    #     print("RT60(Real)=", data_t60)          # for Debug
-    # else:
-    #     print("RT60(from T30*2)=", data_t60)    # for Debug
-    # print("EDT=", data_EDT)         # for Debug
-    # print("D50=", data_D50)         # for Debug
-    # print("C50=", data_C50)         # for Debug
-    # print("C80=", data_C80)         # for Debug
-
-    # print("Start   0dB=", Csample_param.s_0dB)
-    # print("Start -10dB=", Csample_param.s_10dB)
-    # print("Start -20dB=", Csample_param.s_20dB)
-    # print("Start -30dB=", Csample_param.s_30dB)
 
     return  data, decaycurve, Cacoustic_param, Csample_param
 

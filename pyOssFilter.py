@@ -146,7 +146,7 @@ def calc_filt_impulse(in_data, fs, fc, estimate_rt, filt_type='butt', order_tab=
     return  data_filtered, decaycurve, st_acoustic_param
 
 
-def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
+def calc_filt_impulse_learning(in_data, fs, fc, filt_type='butt', order_tab=2, RT60=False, fname = "Please set file name"):
     """ Impulse
 
     Parameters
@@ -197,7 +197,7 @@ def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', ord
         data_filtered = data
         filter_name = "No Filter"
 
-
+    '''
     # Plot Filtered Impulse Data
     if draw_plot:
         dbg.dPlotAudio(fs, data_filtered, fname + ' filtered ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
@@ -206,7 +206,7 @@ def calc_filt_impulse_learning(draw_plot, in_data, fs, fc, filt_type='butt', ord
     decaycurve = numpy.float32(room.decayCurve(data_filtered, time, fs))    # Calculation Normalized Decay Curve
     if draw_plot:
         dbg.dPlotDecay( fs, decaycurve, fname + ' decay curve ' + str(fc) + 'Hz', str_ch_name, "Time(sec)", "Amplitude")
-
+    '''
 
     # Calculation Acoustic Parameters
     data_EDT, impulse_EDTnonLin = room.EDT(decaycurve, fs)

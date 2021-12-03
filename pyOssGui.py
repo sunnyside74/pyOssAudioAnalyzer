@@ -31,7 +31,7 @@ def ossTkFileOpen(pathname=os.getcwd(), title="Choose your file"):
                                              filetypes = (("wave files","*.wav"),("npz files","*.npz"),("all files","*.*")))
 
     print(filename)
-    return filename, path
+    return filename
 
 def ossTkFileSave():
     init_dir = os.getcwd()

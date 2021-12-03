@@ -183,7 +183,7 @@ if a_param.RT60[0][0] > tgt_rt60:
         gain_slope = np.append( gain_slope_a, gain_slope_b )
         data_temp = data_filt * gain_slope
         data_filt, decay, a_param, c_param  = \
-            learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
+            learn.learning_decay(data_temp, st_fmt_w.fs)
 
         if a_param.RT60[0][0] == 0.0 or k > 1000:
             break
@@ -269,7 +269,7 @@ else:
         gain_slope = np.append( gain_slope_a, gain_slope_b )
         data_temp = data_filt * gain_slope
         data_filt, decay, a_param, c_param  = \
-            learn.learning_decay(draw_plot, data_temp, st_fmt_w.fs, fc, fname=wav_fname)
+            learn.learning_decay(data_temp, st_fmt_w.fs)
 
         if a_param.RT60[0][0] == 0.0 or k > 1000:
             print("K IS ==== ", k)
