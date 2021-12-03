@@ -21,7 +21,7 @@ import pyRoomAcoustic as room
 
 #%matplotlib tk
 
-def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False):
+def dPlotAudio(audio_fs, data_plot, y_range_min=-1.0, y_range_max=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False):
 	"""
     plot audio array using matplot for debug
 
@@ -50,12 +50,12 @@ def dPlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="l
 	plt.xlabel(xl_txt)
 	plt.ylabel(yl_txt)
 	plt.xlim(0, end_time)
-	plt.ylim(-y_range, y_range)
+	plt.ylim(y_range_min, y_range_max)
 
 	plt.show()
 
 
-def dPlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False):
+def dPlotDecay(audio_fs, data_plot, y_range_dB=-60, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False):
 	"""
     plot audio array using matplot for debug
 
@@ -84,7 +84,7 @@ def dPlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt
 	plt.xlabel(xl_txt)
 	plt.ylabel(yl_txt)
 	plt.xlim(0, end_time)
-	plt.ylim(-60, 0)
+	plt.ylim(y_range_dB, 0)
 	
 	plt.show()
 
@@ -167,7 +167,7 @@ def dPrintAParam(CAcousticParam):
 	# print( " - T30 = ", CAcousticParam.T30[0][0]/2)         			# for Debug
 
 
-def dSavePlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False, directory='./'):
+def dSavePlotAudio(audio_fs, data_plot, y_range_min=-1.0, y_range_max=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False, directory='./'):
 	"""
     plot audio array using matplot for debug
 
@@ -196,13 +196,13 @@ def dSavePlotAudio(audio_fs, data_plot, y_range=1.0, title_txt="title", label_tx
 	plt.xlabel(xl_txt)
 	plt.ylabel(yl_txt)
 	plt.xlim(0, end_time)
-	plt.ylim(-y_range, y_range)
+	plt.ylim(y_range_min, y_range_max)
 
 	# plt.show()
 	plt.savefig(directory + '/' + title_txt + '_' + label_txt + '.png', dpi=150)
 
 
-def dSavePlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False, directory='./'):
+def dSavePlotDecay(audio_fs, data_plot, y_range_dB=-60, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False, directory='./'):
 	"""
     plot audio array using matplot for debug
 
@@ -231,7 +231,7 @@ def dSavePlotDecay(audio_fs, data_plot, title_txt="title", label_txt="label", xl
 	plt.xlabel(xl_txt)
 	plt.ylabel(yl_txt)
 	plt.xlim(0, end_time)
-	plt.ylim(-60, 0)
+	plt.ylim(y_range_dB, 0)
 	
 	# plt.show()
 	plt.savefig(directory + '/' + title_txt + '_' + label_txt + '.png', dpi=150)
