@@ -4,6 +4,8 @@ Module to calcurate acoustic parameter using NumPy arrays
 from https://
 """
 
+from math import log
+from librosa.core.convert import time_to_frames
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import scipy.stats as stats
@@ -179,6 +181,23 @@ def decayCurve(sig, estimate, fs, noiseEnd=0):
 	decayCurveSPL = 20 * np.log10(abs(decayCurvePa))
 	decayCurveNorm = decayCurveSPL - np.max(decayCurveSPL[int(noiseEnd * fs):], axis=0)
 	return decayCurveNorm
+
+
+def decayCurve_test(sig, fs, noiseEnd=0):
+	"""Calculate the decay curve from a noise signal
+
+	:param sig: noise signal
+	:param fs: sample rate
+	:param noiseEnd: the time at which the noise stimuli stops
+	:return:
+	"""
+	estimate = estimate_rt(sig, fs)
+
+	decayCurvePa = exponential(sig, estimate / 40, fs)
+	decayCurveSPL = 20 * np.log10(abs(decayCurvePa))
+	decayCurveNorm = decayCurveSPL - np.max(decayCurveSPL[int(noiseEnd * fs):], axis=0)
+	return decayCurveNorm
+
 
 
 def exponential(S, tau, fs):
@@ -407,71 +426,58 @@ def _definition(IR, fs, t=50):
 		D = D[:, np.newaxis]
 	return D
 
-def calcAcousticParam( data, decayCurveNorm, fs, RT60 = False, printout=False, label_text='' ):
-	"""	Calculation Acoustic Parameter Values & Print out
 
-	Parameters
-	----------
-	:param data: audio data array
-	:param decayCurveNorm: Normalized decay curve data
-	:param fs: sampling rate of the audio data
-	:param RT60(option): Calculate real rt60 (True of False(=default))
-	:param printout(option): Print All Acoustic Parameter 
-	:param fname: wave file path & name or struct_format_chunk
-	
-	Returns
-	--------
-	:param CAcousticParam: structure of Acoustic Parameters
-	"""
-	# Calculation Acoustic Parameters
-	data_EDT, nonLin_EDT = EDT(decayCurveNorm, fs)
-	data_t20, nonLin_t20 = T20(decayCurveNorm, fs)
-	data_t30, nonLin_t30 = T30(decayCurveNorm, fs)
-	if RT60 is True:
-		data_t60, nonLin_t60 = RT60(decayCurveNorm, fs) 
-	else:
-		data_t60 = data_t30
-	data_C50 = C50(data, fs)
-	data_C80 = C80(data, fs)
-	data_D50 = D50(data, fs)
 
-	if printout is True:
-		print( "Label: ", label_text)
-		print( " - Decay Time  0 ~ -10dB = ", data_EDT[0][0]/6)	# for Debug
-		print( " - Decay Time -5 ~ -25dB = ", data_t20[0][0]/3)	# for Debug
-		print( " - Decay Time -5 ~ -35dB = ", data_t30[0][0]/2)	# for Debug
-		print( " - EDT = ", data_EDT[0][0])						# for Debug
-		print( " - T20 = ", data_t20[0][0])         			# for Debug
-		print( " - T30 = ", data_t30[0][0])         			# for Debug
-		if RT60 is True:
-			print( " - RT60(Real) = ", data_t60[0][0])			# for Debug
-		else:
-			print( " - RT60(=T30) = ", data_t60[0][0]) 			# for Debug
-		print( " - C50 = ", data_C50)         			# for Debug
-		print( " - C80 = ", data_C80)         			# for Debug
-		print( " - D50 = ", data_D50)         			# for Debug
-
-	CAcousticParam = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
-	return CAcousticParam
-
-def estimate_rt(sig, fs, noiseEnd=0):
+def estimate_rt(sig, fs):
 	"""Calculate the decay curve from a noise signal
 
-	:param sig: noise signal
-	:param estimate: the estimated reverb time (s)
-	:param fs: sample rate
-	:param noiseEnd: the time at which the noise stimuli stops
-	:return:
+	:param sig: Signal
+	:param fs: Sample rate
+
+	:return: Estimated RT Time (sec)
 	"""
-	estimate = sig.shape[0]/fs
 
-	decayCurvePa = exponential(sig, estimate / 40, fs)
-	decayCurveSPL = 20 * np.log10(abs(decayCurvePa))
-	decayCurveNorm = decayCurveSPL - np.max(decayCurveSPL[int(noiseEnd * fs):], axis=0)
+	# estimate = sig.shape[0]/fs
 
-	estimate_time, nonLin = T30(decayCurveNorm, fs)
+	# decayCurvePa = exponential(sig, estimate / 40, fs)
+	# decayCurveSPL = 20 * np.log10(abs(decayCurvePa))
+	# decayCurveNorm = decayCurveSPL - np.max(decayCurveSPL[int(noiseEnd * fs):], axis=0)
 
-	return estimate_time[0][0]
+	# estimate_t30, nonLin = T30(decayCurveNorm, fs)
+
+	time_len = sig.shape[0]/fs
+	high, low = abs(max(sig)), abs(min(sig))
+	abs_norm_sig = abs( sig / max(high, low) )
+
+	if abs_norm_sig.ndim == 1:
+		abs_norm_sig = abs_norm_sig[:, np.newaxis]
+
+	for i in range( np.size(abs_norm_sig, axis=1) ):
+		pos_x_max = np.argmax(abs_norm_sig[:,i])
+
+		try:
+			pos_x_reverb_floor = pos_x_max + np.where( abs_norm_sig[:,i][pos_x_max:] <= 0.000001 )[0][0]
+		except IndexError:
+			return pos_x_max, 0, 0, 0
+			raise ValueError("The is no level below required {} ".format(0.000001))
+
+
+	time_t = pos_x_reverb_floor / fs		# time of reverb_floor -60dB 
+
+	print("pos_x_max = ", pos_x_max)
+	print("pos_x_reverb_floor = ", pos_x_reverb_floor)
+	print("time_t(sec) = ", time_t)
+
+	v0 = abs_norm_sig[pos_x_max][0] 				# Initial Voltage
+	v =  abs_norm_sig[pos_x_reverb_floor][0]		# Voltage at time t
+
+	estimate_rt60 = 6.91 * time_t / log( v0 / v )
+
+	print("v0 = ", v0)
+	print("v = ", v)
+	print("estimate_rt60 = ", estimate_rt60)
+
+	return estimate_rt60
 
 
 def soundspeed(c_degree=20):
@@ -479,7 +485,7 @@ def soundspeed(c_degree=20):
 	----------
 	Parameters
 	----------
-	:param c_degree: 섭씨 온도
+	:param c_degree: 섭씨 온도 (default: 섭씨20도)
 
 	----------
 	Returns
@@ -519,11 +525,59 @@ def rt60_sabine(width, depth, height, c_deg=20, w_absl=0.2):
 	return rt_sabine, V, S, K, A
 
 
+def calcAcousticParam( data, decayCurveNorm, fs, use_rt60 = False, printout=False, label_text='' ):
+	"""	Calculation Acoustic Parameter Values & Print out
+
+	Parameters
+	----------
+	:param data: audio data array
+	:param decayCurveNorm: Normalized decay curve data
+	:param fs: sampling rate of the audio data
+	:param RT60(option): Calculate real rt60 (True of False(=default))
+	:param printout(option): Print All Acoustic Parameter 
+	:param fname: wave file path & name or struct_format_chunk
+	
+	Returns
+	--------
+	:param CAcousticParam: structure of Acoustic Parameters
+	"""
+	# Calculation Acoustic Parameters
+	data_EDT, nonLin_EDT = EDT(decayCurveNorm, fs)
+	data_t20, nonLin_t20 = T20(decayCurveNorm, fs)
+	data_t30, nonLin_t30 = T30(decayCurveNorm, fs)
+	if use_rt60 is True:
+		data_t60, nonLin_t60 = RT60(decayCurveNorm, fs) 
+	else:
+		data_t60 = data_t30
+	data_C50 = C50(data, fs)
+	data_C80 = C80(data, fs)
+	data_D50 = D50(data, fs)
+
+	if printout is True:
+		print( "Label: ", label_text)
+		print( " - Decay Time  0 ~ -10dB = ", data_EDT[0][0]/6)	# for Debug
+		print( " - Decay Time -5 ~ -25dB = ", data_t20[0][0]/3)	# for Debug
+		print( " - Decay Time -5 ~ -35dB = ", data_t30[0][0]/2)	# for Debug
+		print( " - EDT = ", data_EDT[0][0])						# for Debug
+		print( " - T20 = ", data_t20[0][0])         			# for Debug
+		print( " - T30 = ", data_t30[0][0])         			# for Debug
+		if RT60 is True:
+			print( " - RT60(Real) = ", data_t60[0][0])			# for Debug
+		else:
+			print( " - RT60(=T30) = ", data_t60[0][0]) 			# for Debug
+		print( " - C50 = ", data_C50)         			# for Debug
+		print( " - C80 = ", data_C80)         			# for Debug
+		print( " - D50 = ", data_D50)         			# for Debug
+
+	CAcousticParam = CAcousticParameter(data_t60, data_EDT, data_D50, data_C50, data_C80)
+	return CAcousticParam
+
+
 class CAcousticParameter:
 	def __init__(self, RT60, EDT, D50, C50, C80):
-		self.RT60 = RT60
+		self.RT60 = RT60[0][0]
 
-		self.EDT = EDT
+		self.EDT = EDT[0][0]
 		self.D50 = D50
 		self.C50 = C50
 		self.C80 = C80

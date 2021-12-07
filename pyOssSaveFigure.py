@@ -56,10 +56,23 @@ for impulseFilename in os.listdir(imp_dir):
 		C_a_param_imp = room.calcAcousticParam(data_imp, decay_imp, fs, label_text=imp_name)
 		dbg.dPrintAParam(C_a_param_imp)
 
-		dbg.dSavePlotAudio(fs, data_imp, title_txt=imp_name, label_txt='RT60='+str(C_a_param_imp.RT60[0][0]), \
-							xl_txt='Time(sec)', yl_txt='Amplitude', newWindow=True, directory='./'+imp_dir+'/'+save_dir )
-		dbg.dSavePlotDecay(fs, decay_imp, title_txt=imp_name + '_Decay' , label_txt='RT60='+str(C_a_param_imp.RT60[0][0]), \
-							xl_txt='Time(sec)', yl_txt='Amplitude', newWindow=True, directory='./'+imp_dir+'/'+save_dir )
+		dbg.dSavePlotAudio(	fs, \
+							data_imp, \
+							title_txt=imp_name, \
+							label_txt='RT60='+str(C_a_param_imp.RT60[0][0]), \
+							xl_txt='Time(sec)', \
+							yl_txt='Amplitude', \
+							newWindow=True, \
+							directory='./'+imp_dir+'/'+save_dir )
+							
+		dbg.dSavePlotDecay(	fs, \
+							decay_imp, \
+							title_txt=imp_name + '_Decay' , \
+							label_txt='RT60='+str(C_a_param_imp.RT60[0][0]), \
+							xl_txt='Time(sec)', \
+							yl_txt='Amplitude', \
+							newWindow=True, \
+							directory='./'+imp_dir+'/'+save_dir )
 		
 
 

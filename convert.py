@@ -7,30 +7,30 @@
 '''
 
 # Import Systems 
-import struct
-import io
+# import struct
+# import io
 import os
-import sys
-import math
-import platform
+# import sys
+# import math
+# import platform
 
 
 # Import Audio
-import pyaudio
-import librosa
-import soundfile
+# import pyaudio
+# import librosa
+# import soundfile
 
-import numpy as np
-import scipy
-import scipy.signal as sig
-import matplotlib.pyplot as plt
+# import numpy as np
+# import scipy
+# import scipy.signal as sig
+# import matplotlib.pyplot as plt
 
 # User Libraries
 import pyOssWavfile					# 
-import pyRoomAcoustic as room
+# import pyRoomAcoustic as room
 import pyOssDebug as dbg
 import pyOssFilter
-import pyOssLearn as learn
+# import pyOssLearn as learn
 
 
 
@@ -52,26 +52,32 @@ save_dir = 'ju_impulse3'
 # save_dir = 'ju_anechoic3'
 
 for filename in os.listdir(ori_dir):
-    if filename.endswith(".wav"):
-        file_directory = os.path.join(ori_dir, filename)
+	if filename.endswith(".wav"):
+		file_directory = os.path.join(ori_dir, filename)
 
-        print("\n\n\n")
-        print("file_directory = ", file_directory)
+		print("\n\n\n")
+		print("file_directory = ", file_directory)
 
-        g_current_file = filename       #global
+		g_current_file = filename       #global
 
-        fname = filename[:-4]
-        ori_fname = pyOssWavfile.str_fname(ori_dir, fname)  # 파일명 조합
+		fname = filename[:-4]
+		ori_fname = pyOssWavfile.str_fname(ori_dir, fname)  # 파일명 조합
 
-        # Check Original Impulse Wav file Header Information
-        st_fmt_ori = pyOssWavfile.extractWavFmtChunk( pyOssWavfile.read_format(ori_fname) )
-        dbg.dWavInfo(st_fmt_ori)
+		# Check Original Impulse Wav file Header Information
+		st_fmt_ori = pyOssWavfile.extractWavFmtChunk( pyOssWavfile.read_format(ori_fname) )
+		dbg.dWavInfo(st_fmt_ori)
 
-        # Load Original Audio & Convert format mono / float32 / 48000Hz 
-        chunk_conv, data_conv, st_fmt_conv, t_conv = pyOssWavfile.readf32( ori_fname, samplerate=48000 )    # function of convert wav file to 32bit float format
-        dbg.dWavInfo(st_fmt_conv)
-        print(f" - Time(sec) =", t_conv)
+		# Load Original Audio & Convert format mono / float32 / 48000Hz 
+		chunk_conv, data_conv, st_fmt_conv, t_conv = pyOssWavfile.readf32( ori_fname, samplerate=48000 )    # function of convert wav file to 32bit float format
+		dbg.dWavInfo(st_fmt_conv)
+		print(f" - Time(sec) =", t_conv)
 
-        str_info_conv = pyOssWavfile.str_file_info(st_fmt_conv)
-        dir_result = os.path.join(os.getcwd(), save_dir)
-        pyOssWavfile.write(os.path.join(dir_result, fname + str_info_conv + '.wav'), st_fmt_conv.fs, data_conv)
+		str_info_conv = pyOssWavfile.str_file_info(st_fmt_conv)
+		dir_result = os.path.join(os.getcwd(), save_dir)
+		pyOssWavfile.write(os.path.join(dir_result, fname + str_info_conv + '.wav'), \
+							st_fmt_conv.fs, data_conv)
+
+		# Check Saved Conveted File Information
+
+
+		

@@ -181,9 +181,9 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
         draw_plot = False
         # draw_plot = True
 
-        if a_param.RT60[0][0] > tgt_rt60:
+        if a_param.RT60 > tgt_rt60:
             print("... > ", str(tgt_rt60))
-            while a_param.RT60[0][0] > tgt_rt60:
+            while a_param.RT60 > tgt_rt60:
 
             # data_w2 각 구간별 위치 구한 후 각 구각에 data_w*1.4, *1.2 *1 계산
             # 위치 찾기
@@ -209,26 +209,26 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
                 # gain_slope = np.append( gain_slope, gain_slope_d)
 
                 # case 5-1
-                gain_slope = learn.calc_gain_slope(a_param.RT60[0][0], tgt_rt60, c_param, data_learn.shape[0])
+                gain_slope = learn.calc_gain_slope(a_param.RT60, tgt_rt60, c_param, data_learn.shape[0])
 
                 # Process
                 data_temp = data_learn * gain_slope
                 data_learn, decay, a_param, c_param  = \
                     learn.learning_decay(data_temp, fs)
 
-                if a_param.RT60[0][0] == 0.0 or k > 1000:
+                if a_param.RT60 == 0.0 or k > 1000:
                     print("K IS ==== ", k)
                     break
 
                 k = k + 1
                 # if k <= 50 or k % 50 == 0:
-                    # print (k, " : ",  a_param.RT60[0][0])
+                    # print (k, " : ",  a_param.RT60)
                     # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-                # print (k, " : ",  a_param.RT60[0][0])
+                # print (k, " : ",  a_param.RT60)
                 # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
         else:
             print("... < ", str(tgt_rt60))
-            while a_param.RT60[0][0] < tgt_rt60:
+            while a_param.RT60 < tgt_rt60:
 
                 # data_w2 각 구간별 위치 구한 후 각 구각에 data_w*1.4, *1.2 *1 계산
                 # 위치 찾기
@@ -253,28 +253,28 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
                 # gain_slope = np.append( gain_slope, gain_slope_d)
 
                 # case 5-1
-                gain_slope = learn.calc_gain_slope(a_param.RT60[0][0], tgt_rt60, c_param, data_learn.shape[0])
+                gain_slope = learn.calc_gain_slope(a_param.RT60, tgt_rt60, c_param, data_learn.shape[0])
 
                 data_temp = data_learn * gain_slope
                 data_learn, decay, a_param, c_param  = \
                     learn.learning_decay(data_temp, fs)
 
-                if a_param.RT60[0][0] == 0.0 or k > 1000:
+                if a_param.RT60 == 0.0 or k > 1000:
                     print("K IS ==== ", k)
                     break
 
                 k = k + 1
                 # if k <= 50 or k % 50 == 0:
-                    # print (k, " : ",  a_param.RT60[0][0])
+                    # print (k, " : ",  a_param.RT60)
                     # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-                # print (k, " : ",  a_param.RT60[0][0])
+                # print (k, " : ",  a_param.RT60)
                 # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
 
         print("=== Stop, k = ", k)
         # print("2-1. acoustic_w_param = ", acoustic_w_param)
         # print('1. inspect = ', inspect.getmembers(acoustic_w_param))
         print('\n2-1. __dict__ = ', a_param.__dict__)
-        print('2-2. acoustic_w_param.RT60[0][0] = ', a_param.RT60[0][0])
+        print('2-2. acoustic_w_param.RT60 = ', a_param.RT60)
         print('\n2-3. __dict__ = ', c_param.__dict__)
         print('2-4. sample_w_dB_param.s_0dB = ', c_param.s_0dB)
         print('2-5. sample_w_dB_param.s_10dB = ', c_param.s_10dB)
@@ -285,7 +285,7 @@ if STAT_FILTER == True:         # 로드한 임펄스를 필터링하고, 필터
 
         # Save Learned Impulse & Processed Anechoic Audio file
         if STAT_SAVE_IMPULSE == True:
-            imp_learn_fname = imp_name + '_' + str(imp_param.RT60[0][0]) + '_to_' + str(a_param.RT60[0][0]) + '_k=' + str(k)
+            imp_learn_fname = imp_name + '_' + str(imp_param.RT60) + '_to_' + str(a_param.RT60) + '_k=' + str(k)
             sname_imp_learn = pyOssWavfile.str_fname(result_dir, imp_learn_fname)
             # dbg.dPrintf(sname_imp_learn)
             pyOssWavfile.write(sname_imp_learn, fs, data_learn)
@@ -320,9 +320,9 @@ else:
     draw_plot = False
     # draw_plot = True
 
-    if a_param.RT60[0][0] > tgt_rt60:
+    if a_param.RT60 > tgt_rt60:
         print("... > ", str(tgt_rt60))
-        while a_param.RT60[0][0] > tgt_rt60:
+        while a_param.RT60 > tgt_rt60:
 
             # data_w2 각 구간별 위치 구한 후 각 구각에 data_w*1.4, *1.2 *1 계산
             # 위치 찾기
@@ -348,25 +348,25 @@ else:
             # gain_slope = np.append( gain_slope, gain_slope_d)
 
             # case 5-1
-            gain_slope = learn.calc_gain_slope(a_param.RT60[0][0], tgt_rt60, c_param, data_learn.shape[0])
+            gain_slope = learn.calc_gain_slope(a_param.RT60, tgt_rt60, c_param, data_learn.shape[0])
 
             # Process
             data_temp = data_learn * gain_slope
             data_learn, decay, a_param, c_param  = \
                 learn.learning_decay(data_temp, fs)
 
-            if a_param.RT60[0][0] == 0.0 or k > 1000:
+            if a_param.RT60 == 0.0 or k > 1000:
                 break
 
             k = k + 1
             # if k <= 50 or k % 50 == 0:
-                # print (k, " : ",  a_param.RT60[0][0])
+                # print (k, " : ",  a_param.RT60)
                 # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-            # print (k, " : ",  a_param.RT60[0][0])
+            # print (k, " : ",  a_param.RT60)
             # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
     else:
         print("... < ", str(tgt_rt60))
-        while a_param.RT60[0][0] < tgt_rt60:
+        while a_param.RT60 < tgt_rt60:
 
             # data_w2 각 구간별 위치 구한 후 각 구각에 data_w*1.4, *1.2 *1 계산
             # 위치 찾기
@@ -391,28 +391,28 @@ else:
             # gain_slope = np.append( gain_slope, gain_slope_d)
 
             # case 5-1
-            gain_slope = learn.calc_gain_slope(a_param.RT60[0][0], tgt_rt60, c_param, data_learn.shape[0])
+            gain_slope = learn.calc_gain_slope(a_param.RT60, tgt_rt60, c_param, data_learn.shape[0])
 
             data_temp = data_learn * gain_slope
             data_learn, decay, a_param, c_param  = \
                 learn.learning_decay(data_temp, fs)
 
-            if a_param.RT60[0][0] == 0.0 or k > 1000:
+            if a_param.RT60 == 0.0 or k > 1000:
                 print("K IS ==== ", k)
                 break
 
             k = k + 1
             # if k <= 50 or k % 50 == 0:
-                # print (k, " : ",  a_param.RT60[0][0])
+                # print (k, " : ",  a_param.RT60)
                 # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
-            # print (k, " : ",  a_param.RT60[0][0])
+            # print (k, " : ",  a_param.RT60)
             # print ("      ",  p_0dB, p_10dB, p_20dB, p_30dB)
 
     print("=== Stop, k = ", k)
     # print("2-1. acoustic_w_param = ", acoustic_w_param)
     # print('1. inspect = ', inspect.getmembers(acoustic_w_param))
     print('\n2-1. __dict__ = ', a_param.__dict__)
-    print('2-2. acoustic_w_param.RT60[0][0] = ', a_param.RT60[0][0])
+    print('2-2. acoustic_w_param.RT60 = ', a_param.RT60)
     print('\n2-3. __dict__ = ', c_param.__dict__)
     print('2-4. sample_w_dB_param.s_0dB = ', c_param.s_0dB)
     print('2-5. sample_w_dB_param.s_10dB = ', c_param.s_10dB)
@@ -424,7 +424,7 @@ else:
 
     if STAT_SAVE_IMPULSE == True:
         # Save Learned Impulse
-        imp_learn_fname = imp_name + '_' + str(imp_param.RT60[0][0]) + '_to_' + str(a_param.RT60[0][0]) + '_k=' + str(k)
+        imp_learn_fname = imp_name + '_' + str(imp_param.RT60) + '_to_' + str(a_param.RT60) + '_k=' + str(k)
         sname_imp_learn = pyOssWavfile.str_fname(result_dir, imp_learn_fname)
         # dbg.dPrintf(sname_imp_learn)
         pyOssWavfile.write(sname_imp_learn, fs, data_learn)
