@@ -154,15 +154,15 @@ def dPrintAParam(CAcousticParam):
 	:param CAcousticParam: structure of Acoustic Paramter
 	"""
 	print( "Stucture of the Acoustic Parameters")
-	print( " - RT60 = ", CAcousticParam.RT60[0][0])				# for Debug
-	print( " - EDT = ", CAcousticParam.EDT[0][0])				# for Debug
+	print( " - RT60 = ", CAcousticParam.RT60)				# for Debug
+	print( " - EDT = ", CAcousticParam.EDT)				# for Debug
 	print( " - D50 = ", CAcousticParam.D50)         			# for Debug
 	print( " - C50 = ", CAcousticParam.C50)         			# for Debug
 	print( " - C80 = ", CAcousticParam.C80)         			# for Debug
 
-	print( " - Decay Time  0 ~ -10dB = ", CAcousticParam.EDT[0][0]/6)	# for Debug
-	# print( " - Decay Time -5 ~ -25dB = ", CAcousticParam.T20[0][0]/3)	# for Debug
-	print( " - Decay Time -5 ~ -35dB = ", CAcousticParam.RT60[0][0]/4)	# for Debug
+	print( " - Decay Time  0 ~ -10dB = ", CAcousticParam.EDT/6)	# for Debug
+	# print( " - Decay Time -5 ~ -25dB = ", CAcousticParam.T20/3)	# for Debug
+	print( " - Decay Time -5 ~ -35dB = ", CAcousticParam.RT60/2)	# for Debug
 	# print( " - T20 = ", CAcousticParam.T20[0][0])         			# for Debug
 	# print( " - T30 = ", CAcousticParam.T30[0][0]/2)         			# for Debug
 

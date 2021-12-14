@@ -106,8 +106,9 @@ GitHub.sublime-settings
 .history
 
 # USER
+.DS_Store
+desktop.ini
 patch.diff
-TyndallBruceMonument.wav.reapeaks
 audiofiles/adult_female_speech_8000Hz.filtered.wav
 audiofiles/adult_female_speech.with.MaesHowe.conv.wav
 audiofiles/adult_female_speech.with.mh3_000_ortf_48k.conv.wav
@@ -122,6 +123,7 @@ audiofiles/singing.with.MaesHowe.conv.wav
 audiofiles/singing.with.mh3_000_ortf_48k.conv.wav
 10s sweep for 3s reverb.44.1kHz.f32.png
 ju_anechoic/
-audiofiles/adult_female_speech.wav.reapeaks
 *.reapeaks
 measure/
+GH_IR/
+audiofiles/npz/

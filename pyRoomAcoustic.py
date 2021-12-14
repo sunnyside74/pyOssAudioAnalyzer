@@ -10,6 +10,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import scipy.stats as stats
 from scipy import signal
+import librosa
 
 # Import Users
 import pyOssDebug as dbg
@@ -437,17 +438,10 @@ def estimate_rt(sig, fs):
 	:return: Estimated RT Time (sec)
 	"""
 
-	# estimate = sig.shape[0]/fs
-
-	# decayCurvePa = exponential(sig, estimate / 40, fs)
-	# decayCurveSPL = 20 * np.log10(abs(decayCurvePa))
-	# decayCurveNorm = decayCurveSPL - np.max(decayCurveSPL[int(noiseEnd * fs):], axis=0)
-
-	# estimate_t30, nonLin = T30(decayCurveNorm, fs)
-
 	time_len = sig.shape[0]/fs
 	high, low = abs(max(sig)), abs(min(sig))
-	abs_norm_sig = abs( sig / max(high, low) )
+	abs_norm_sig = abs( sig / max(high, low) ) 
+	# abs_norm_sig = librosa.amplitude_to_db( abs( sig / max(high, low) ) )
 
 	if abs_norm_sig.ndim == 1:
 		abs_norm_sig = abs_norm_sig[:, np.newaxis]
@@ -457,6 +451,7 @@ def estimate_rt(sig, fs):
 
 		try:
 			pos_x_reverb_floor = pos_x_max + np.where( abs_norm_sig[:,i][pos_x_max:] <= 0.000001 )[0][0]
+			# pos_x_reverb_floor = pos_x_max + np.where( abs_norm_sig[:,i][pos_x_max:] <= -60 )[0][0]
 		except IndexError:
 			return pos_x_max, 0, 0, 0
 			raise ValueError("The is no level below required {} ".format(0.000001))
@@ -468,13 +463,18 @@ def estimate_rt(sig, fs):
 	print("pos_x_reverb_floor = ", pos_x_reverb_floor)
 	print("time_t(sec) = ", time_t)
 
-	v0 = abs_norm_sig[pos_x_max][0] 				# Initial Voltage
-	v =  abs_norm_sig[pos_x_reverb_floor][0]		# Voltage at time t
+	# v0 = abs_norm_sig[pos_x_max][0] 				# Initial Voltage
+	# v =  abs_norm_sig[pos_x_reverb_floor][0]		# Voltage at time t
+	# estimate_rt60 = round(6.91 * time_t / log( v0 / v ), 2)
+	# print("v0 = ", v0)
+	# print("v = ", v)
+	# print("estimate_rt60 = ", estimate_rt60)
 
-	estimate_rt60 = 6.91 * time_t / log( v0 / v )
-
-	print("v0 = ", v0)
-	print("v = ", v)
+	i0 = abs_norm_sig[pos_x_max][0] 				# Initial Voltage
+	i =  abs_norm_sig[pos_x_reverb_floor][0]		# Voltage at time t
+	estimate_rt60 = round(13.82 * time_t / log( i0 / i ), 2)
+	print("i0 = ", i0)
+	print("i = ", i)
 	print("estimate_rt60 = ", estimate_rt60)
 
 	return estimate_rt60
