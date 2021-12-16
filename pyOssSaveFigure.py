@@ -25,9 +25,9 @@ plt.rc('font', family='Malgun Gothic')			# 한글폰트 사용
 
 save_dir = 'imagefiles'
 
-# imp_dir = 'ju_impulse2'
+imp_dir = 'ju_impulse2'
 # imp_dir = 'ju_impulse3'
-imp_dir = 'ju_impulse_test'
+# imp_dir = 'ju_impulse_test'
 
 g_current_impulse_file = ''
 
@@ -49,9 +49,9 @@ for impulseFilename in os.listdir(imp_dir):
 		dbg.dWavInfo(st_fmt_imp)
 		print(f" - Time(sec) =", t_imp)
 
-		# t_estimate = room.estimate_rt(data_imp, fs)
 		# t_estimate = None
-		t_estimate = 0
+		t_estimate = room.estimate_rt(data_imp, fs)
+		# t_estimate = 0
 
 		decay_imp = room.decayCurve(data_imp, estimate=t_estimate, fs=fs)
 		C_a_param_imp = room.calcAcousticParam(data_imp, decay_imp, fs, label_text=imp_name)
@@ -74,7 +74,3 @@ for impulseFilename in os.listdir(imp_dir):
 							yl_txt='Amplitude(dB)', \
 							newWindow=True, \
 							directory='./'+imp_dir+'/'+save_dir )
-		
-
-
-

@@ -163,8 +163,6 @@ def dPrintAParam(CAcousticParam):
 	print( " - Decay Time  0 ~ -10dB = ", CAcousticParam.EDT/6)	# for Debug
 	# print( " - Decay Time -5 ~ -25dB = ", CAcousticParam.T20/3)	# for Debug
 	print( " - Decay Time -5 ~ -35dB = ", CAcousticParam.RT60/2)	# for Debug
-	# print( " - T20 = ", CAcousticParam.T20[0][0])         			# for Debug
-	# print( " - T30 = ", CAcousticParam.T30[0][0]/2)         			# for Debug
 
 
 def dSavePlotAudio(audio_fs, data_plot, y_range_min=-1.0, y_range_max=1.0, title_txt="title", label_txt="label", xl_txt="x", yl_txt="y", newWindow=False, directory='./'):
